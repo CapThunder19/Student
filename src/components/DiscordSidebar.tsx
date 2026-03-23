@@ -2,7 +2,7 @@
 
 import { useRouter, usePathname } from 'next/navigation';
 import Link from 'next/link';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import {
   LogOut,
   Home,
@@ -16,23 +16,28 @@ import {
   BarChart3,
   AlertTriangle,
   Settings,
-  ChevronDown,
-  Plus,
 } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
+
+type SidebarUser = {
+  name: string;
+};
 
 export default function DiscordSidebar() {
   const router = useRouter();
   const pathname = usePathname();
-  const [user, setUser] = useState<any>(null);
-  const [collapsed, setCollapsed] = useState(false);
-
-  useEffect(() => {
+  const [user] = useState<SidebarUser | null>(() => {
+    if (typeof window === 'undefined') return null;
     const userData = localStorage.getItem('user');
-    if (userData) {
-      setUser(JSON.parse(userData));
+    if (!userData) return null;
+
+    try {
+      const parsed = JSON.parse(userData) as SidebarUser;
+      return parsed;
+    } catch {
+      return null;
     }
-  }, []);
+  });
 
   const handleLogout = () => {
     localStorage.removeItem('token');
@@ -61,13 +66,11 @@ export default function DiscordSidebar() {
   ];
 
   return (
-    <div className="flex h-screen bg-slate-900">
-      {/* Main Sidebar - Modules/Servers (Discord style) */}
-      <motion.aside
-        animate={{ width: collapsed ? 80 : 80 }}
-        transition={{ duration: 0.2 }}
-        className="w-20 bg-slate-950 border-r border-slate-800 flex flex-col items-center py-4 space-y-2 overflow-y-auto"
-      >
+    <motion.aside
+      animate={{ width: 80 }}
+      transition={{ duration: 0.2 }}
+      className="w-20 h-screen shrink-0 bg-slate-950 border-r border-slate-800 flex flex-col items-center py-4 space-y-2 overflow-y-auto"
+    >
         {/* Home/Logo */}
         <motion.button
           whileHover={{ scale: 1.1 }}
@@ -172,10 +175,6 @@ export default function DiscordSidebar() {
             </motion.button>
           </>
         ) : null}
-      </motion.aside>
-
-      {/* Main Content Area */}
-      <div className="flex-1 flex flex-col overflow-hidden" />
-    </div>
+    </motion.aside>
   );
 }

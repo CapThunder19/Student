@@ -1,128 +1,248 @@
 'use client';
 
-import { motion } from 'framer-motion';
-import { useState } from 'react';
-import { Users, Calendar, MapPin, MessageCircle } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { MessageCircle, Send, Heart, Users, LogOut } from 'lucide-react';
+import { useState, useRef, useEffect } from 'react';
+import { useSocket } from '../../lib/useSocket';
+import { ChatMessage } from '../../lib/socket';
+import { signOut, useSession } from 'next-auth/react';
+import Image from 'next/image';
+import Link from 'next/link';
 
-export default function CommunityPage() {
-  const [activeTab, setActiveTab] = useState<'events' | 'lostfound' | 'projects'>('events');
+export default function Community() {
+  const { data: session } = useSession();
+  const { messages, onlineCount, typingUsers, connected, sendMessage, sendTyping, likeMessage } = useSocket();
+  const [input, setInput] = useState('');
+  const [activePanel, setActivePanel] = useState<'chat' | 'updates'>('chat');
+  const typingTimeout = useRef<NodeJS.Timeout | null>(null);
+  const bottomRef = useRef<HTMLDivElement>(null);
 
-  const events = [
-    { id: '1', title: 'Tech Talk 2025', cat: 'Tech', date: 'Jan 25', location: 'Auditorium', rsvp: 45, cap: 100 },
-    { id: '2', title: 'Sports Tournament', cat: 'Sports', date: 'Jan 28', location: 'Ground', rsvp: 78, cap: 200 },
-    { id: '3', title: 'Culture Night', cat: 'Cultural', date: 'Feb 1', location: 'Main Hall', rsvp: 92, cap: 150 },
-  ];
+  useEffect(() => {
+    bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [messages, typingUsers]);
 
-  const lostfound = [
-    { id: '1', type: 'lost', title: 'Blue Backpack', desc: 'Lost near library', date: 'Jan 20', status: 'active' },
-    { id: '2', type: 'found', title: 'Student ID Card', desc: 'Found in cafeteria', date: 'Jan 22', status: 'active' },
-    { id: '3', type: 'lost', title: 'Watch', desc: 'Golden watch with leather band', date: 'Jan 15', status: 'resolved' },
-  ];
+  const handleSend = () => {
+    if (!input.trim()) return;
+    sendMessage(input);
+    setInput('');
+    sendTyping(false);
+    if (typingTimeout.current) clearTimeout(typingTimeout.current);
+  };
 
-  const projects = [
-    { id: '1', title: 'AI Chatbot', skills: ['Python', 'NLP'], rating: 4.8 },
-    { id: '2', title: 'Mobile App Dev', skills: ['React', 'Node.js'], rating: 4.6 },
-    { id: '3', title: 'Web Design', skills: ['UI/UX', 'Figma'], rating: 4.9 },
-  ];
+  const handleTyping = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setInput(e.target.value);
+    sendTyping(true);
+    if (typingTimeout.current) clearTimeout(typingTimeout.current);
+    typingTimeout.current = setTimeout(() => sendTyping(false), 1500);
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') handleSend();
+  };
+
+  const handleLogout = async () => {
+    await signOut({ callbackUrl: '/login' });
+  };
+
+  const userName = session?.user?.name || 'Anonymous';
+  const userEmail = session?.user?.email || '';
+  const userImage = session?.user?.image || '';
+  const canSendMessages = Boolean(session?.user?.email);
 
   return (
-    <div className="flex flex-col min-h-screen bg-slate-900">
-      <header className="sticky top-0 z-40 bg-slate-950 border-b border-slate-800 px-8 py-6">
-        <div className="flex items-center gap-3">
-          <div className="p-3 rounded-lg bg-green-600 bg-opacity-20">
-            <Users className="w-6 h-6 text-green-400" />
-          </div>
-          <div>
-            <h1 className="text-3xl font-bold text-white">Community</h1>
-            <p className="text-slate-400 text-sm">Events, lost & found, partnerships</p>
-          </div>
-        </div>
-      </header>
-
-      <main className="flex-1 overflow-auto">
-        <div className="max-w-6xl mx-auto px-8 py-8">
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="flex gap-4 mb-8 border-b border-slate-700 pb-4">
-            {['events', 'lostfound', 'projects'].map(tab => (
-              <button key={tab} onClick={() => setActiveTab(tab as any)} className={`px-6 py-2 font-semibold rounded-lg ${activeTab === tab ? 'bg-blue-600 text-white' : 'text-slate-400 hover:text-white'}`}>
-                {tab === 'lostfound' ? 'Lost & Found' : tab.charAt(0).toUpperCase() + tab.slice(1)}
+    <div className="min-h-screen bg-linear-to-br from-slate-50 via-blue-50 to-indigo-100 dark:from-slate-900 dark:via-slate-900 dark:to-slate-800">
+      <div className="max-w-4xl mx-auto px-4 md:px-8 py-10 flex flex-col h-screen">
+        <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="mb-6">
+          <div className="flex items-center justify-between">
+            <h1 className="text-4xl font-bold text-slate-900 dark:text-white flex items-center gap-3">
+              <MessageCircle className="w-9 h-9 text-blue-600" />
+              Community Chat
+            </h1>
+            <div className="flex items-center gap-2">
+              {userImage ? (
+                <Image src={userImage} alt="avatar" width={36} height={36} className="rounded-full" />
+              ) : (
+                <div className="w-9 h-9 rounded-full bg-blue-200 flex items-center justify-center text-blue-700 font-bold text-sm">
+                  {userName[0]?.toUpperCase() || '?'}
+                </div>
+              )}
+              <span className="text-sm font-medium text-slate-700 dark:text-slate-300">{userName}</span>
+              <button
+                onClick={handleLogout}
+                className="ml-2 inline-flex items-center gap-2 rounded-lg border border-slate-300 dark:border-slate-600 px-3 py-1.5 text-xs font-semibold text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors"
+              >
+                <LogOut className="w-3.5 h-3.5" />
+                Logout
               </button>
-            ))}
-          </motion.div>
+            </div>
+          </div>
 
-          {activeTab === 'events' && (
-            <motion.section initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {events.map((e, idx) => (
-                <motion.div key={e.id} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: idx * 0.08 }} className="bg-slate-800 border border-slate-700 rounded-xl p-6 hover:border-slate-600 hover:bg-slate-750 transition-all">
-                  <h3 className="text-white font-bold text-lg mb-2">{e.title}</h3>
-                  <div className="space-y-2 text-slate-400 text-sm mb-4">
-                    <div className="flex items-center gap-2">
-                      <Calendar className="w-4 h-4" /> {e.date}
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <MapPin className="w-4 h-4" /> {e.location}
-                    </div>
-                  </div>
-                  <div className="flex justify-between items-center mt-4 pt-4 border-t border-slate-700">
-                    <span className="text-slate-400 text-sm">{e.rsvp}/{e.cap} attending</span>
-                    <button className="px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white text-sm rounded font-semibold">
-                      RSVP
-                    </button>
-                  </div>
-                </motion.div>
-              ))}
-            </motion.section>
+          <div className="flex items-center gap-6 mt-3">
+            <div className="flex items-center gap-2">
+              <span className={`w-2 h-2 rounded-full ${connected ? 'bg-green-500' : 'bg-red-400'}`} />
+              <span className="text-sm text-slate-500 dark:text-slate-400">
+                {connected ? 'Connected' : 'Reconnecting...'}
+              </span>
+            </div>
+            <div className="flex items-center gap-1 text-sm text-slate-500 dark:text-slate-400">
+              <Users className="w-4 h-4" />
+              <span>{onlineCount} online</span>
+            </div>
+            <div className="flex items-center gap-1 text-sm text-slate-500 dark:text-slate-400">
+              <MessageCircle className="w-4 h-4" />
+              <span>{messages.length} messages</span>
+            </div>
+          </div>
+
+          <div className="mt-4 inline-flex items-center rounded-xl bg-slate-100 dark:bg-slate-800 p-1">
+            <button
+              onClick={() => setActivePanel('chat')}
+              className={`px-4 py-2 text-sm rounded-lg transition-colors ${
+                activePanel === 'chat'
+                  ? 'bg-white dark:bg-slate-700 text-blue-700 dark:text-blue-300 font-semibold'
+                  : 'text-slate-600 dark:text-slate-300'
+              }`}
+            >
+              Realtime Chat
+            </button>
+            <button
+              onClick={() => setActivePanel('updates')}
+              className={`px-4 py-2 text-sm rounded-lg transition-colors ${
+                activePanel === 'updates'
+                  ? 'bg-white dark:bg-slate-700 text-blue-700 dark:text-blue-300 font-semibold'
+                  : 'text-slate-600 dark:text-slate-300'
+              }`}
+            >
+              Community Updates
+            </button>
+          </div>
+        </motion.div>
+
+        {activePanel === 'updates' ? (
+          <div className="flex-1 rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-6 text-slate-600 dark:text-slate-300">
+            <h2 className="text-lg font-semibold text-slate-900 dark:text-white mb-2">Community Updates</h2>
+            <p className="text-sm">Realtime chat is available in the Realtime Chat tab.</p>
+          </div>
+        ) : (
+          <>
+
+        <div className="flex-1 overflow-y-auto space-y-3 pr-1 pb-2">
+          {messages.length === 0 && (
+            <div className="flex flex-col items-center justify-center h-full text-slate-400 dark:text-slate-500">
+              <MessageCircle className="w-12 h-12 mb-3 opacity-30" />
+              <p>No messages yet. Be the first to say hi! 👋</p>
+            </div>
           )}
 
-          {activeTab === 'lostfound' && (
-            <motion.section initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-4">
-              {lostfound.map((item, idx) => (
-                <motion.div key={item.id} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: idx * 0.08 }} className="bg-slate-800 border border-slate-700 rounded-xl p-6 hover:border-slate-600 transition-all">
-                  <div className="flex items-start justify-between">
-                    <div className="flex-1">
-                      <div className="flex items-center gap-2 mb-2">
-                        <h3 className="text-white font-bold text-lg">{item.title}</h3>
-                        <span className={`px-2 py-1 rounded text-xs font-bold ${item.type === 'lost' ? 'bg-orange-600 bg-opacity-20 text-orange-400' : 'bg-green-600 bg-opacity-20 text-green-400'}`}>
-                          {item.type === 'lost' ? '❌ Lost' : '✓ Found'}
-                        </span>
+          <AnimatePresence>
+            {messages.map((msg: ChatMessage) => {
+              const isMe = msg.author === userName;
+              return (
+                <motion.div
+                  key={msg.id}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0 }}
+                  className={`flex gap-3 ${isMe ? 'flex-row-reverse' : ''}`}
+                >
+                  <div className="shrink-0">
+                    {msg.avatar.startsWith('http') ? (
+                      <Image src={msg.avatar} alt={msg.author} width={36} height={36} className="rounded-full" />
+                    ) : (
+                      <div className="w-9 h-9 rounded-full bg-blue-100 dark:bg-slate-700 flex items-center justify-center font-bold text-blue-600">
+                        {msg.avatar}
                       </div>
-                      <p className="text-slate-400 text-sm mb-2">{item.desc}</p>
-                      <p className="text-slate-500 text-xs">{item.date}</p>
-                    </div>
-                    <button className="px-3 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm rounded font-semibold whitespace-nowrap ml-4">
-                      Contact
-                    </button>
+                    )}
                   </div>
-                </motion.div>
-              ))}
-            </motion.section>
-          )}
 
-          {activeTab === 'projects' && (
-            <motion.section initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {projects.map((p, idx) => (
-                <motion.div key={p.id} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: idx * 0.08 }} className="bg-slate-800 border border-slate-700 rounded-xl p-6 hover:border-slate-600 hover:bg-slate-750 transition-all">
-                  <h3 className="text-white font-bold text-lg mb-3">{p.title}</h3>
-                  <div className="flex flex-wrap gap-2 mb-4">
-                    {p.skills.map(s => (
-                      <span key={s} className="px-2 py-1 bg-slate-700 text-slate-300 text-xs rounded">
-                        {s}
-                      </span>
-                    ))}
-                  </div>
-                  <div className="flex items-center justify-between pt-4 border-t border-slate-700">
-                    <span className="text-yellow-400 font-semibold flex items-center gap-1">
-                      ⭐ {p.rating}
+                  <div className={`max-w-[70%] flex flex-col ${isMe ? 'items-end' : 'items-start'}`}>
+                    <span className="text-xs text-slate-500 dark:text-slate-400 mb-1 px-1">
+                      {isMe ? 'You' : msg.author} · {new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                     </span>
-                    <button className="px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white text-sm rounded font-semibold">
-                      Join
+                    <div className={`rounded-2xl px-4 py-3 shadow-sm ${
+                      isMe
+                        ? 'bg-linear-to-r from-blue-600 to-indigo-600 text-white rounded-tr-sm'
+                        : 'bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-200 border border-slate-200 dark:border-slate-700 rounded-tl-sm'
+                    }`}>
+                      <p className="text-sm leading-relaxed">{msg.message}</p>
+                    </div>
+                    <button
+                      onClick={() => likeMessage(msg.id)}
+                      className={`flex items-center gap-1 mt-1 px-1 text-xs transition-colors ${
+                        msg.likedBy.includes(userEmail)
+                          ? 'text-red-500'
+                          : 'text-slate-400 hover:text-red-400'
+                      }`}
+                    >
+                      <Heart className="w-3 h-3" />
+                      {msg.likes > 0 && <span>{msg.likes}</span>}
                     </button>
                   </div>
                 </motion.div>
-              ))}
-            </motion.section>
-          )}
+              );
+            })}
+          </AnimatePresence>
+
+          <AnimatePresence>
+            {typingUsers.length > 0 && (
+              <motion.div
+                initial={{ opacity: 0, y: 5 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0 }}
+                className="flex items-center gap-2 text-sm text-slate-400 dark:text-slate-500 pl-1"
+              >
+                <div className="flex gap-1">
+                  {[0, 1, 2].map((i) => (
+                    <motion.span
+                      key={i}
+                      className="w-1.5 h-1.5 bg-slate-400 rounded-full"
+                      animate={{ y: [0, -4, 0] }}
+                      transition={{ duration: 0.6, repeat: Infinity, delay: i * 0.15 }}
+                    />
+                  ))}
+                </div>
+                <span>{typingUsers.join(', ')} {typingUsers.length === 1 ? 'is' : 'are'} typing...</span>
+              </motion.div>
+            )}
+          </AnimatePresence>
+          <div ref={bottomRef} />
         </div>
-      </main>
+
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="mt-4 bg-white dark:bg-slate-800 rounded-2xl p-4 shadow-lg border border-slate-200 dark:border-slate-700"
+        >
+          {!canSendMessages && (
+            <div className="mb-3 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-800 dark:border-amber-800 dark:bg-amber-950/20 dark:text-amber-300">
+              Please <Link href="/login" className="font-semibold underline">login</Link> to send messages. You can still read community chat.
+            </div>
+          )}
+          <div className="flex gap-3">
+            <input
+              type="text"
+              value={input}
+              onChange={handleTyping}
+              onKeyDown={handleKeyDown}
+              placeholder={canSendMessages ? 'Type a message...' : 'Login to send a message'}
+              disabled={!canSendMessages}
+              className="flex-1 px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-600 dark:bg-slate-700 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+            />
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={handleSend}
+              disabled={!input.trim() || !canSendMessages}
+              className="bg-linear-to-r from-blue-600 to-indigo-600 text-white px-5 py-3 rounded-xl font-semibold flex items-center gap-2 disabled:opacity-40 disabled:cursor-not-allowed"
+            >
+              <Send className="w-4 h-4" />
+              Send
+            </motion.button>
+          </div>
+        </motion.div>
+          </>
+        )}
+      </div>
     </div>
   );
 }
