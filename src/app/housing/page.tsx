@@ -228,16 +228,16 @@ export default function HousingPage() {
       {/* Add PG Modal */}
       <AnimatePresence>
         {showAddModal && (
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
-            <motion.div initial={{ scale: 0.95 }} animate={{ scale: 1 }} exit={{ scale: 0.95 }} className="bg-slate-800 border border-slate-700 rounded-xl max-w-md w-full max-h-96 overflow-y-auto">
-              <div className="flex items-center justify-between p-6 border-b border-slate-700 sticky top-0 bg-slate-800">
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4" onClick={() => setShowAddModal(false)}>
+            <motion.div initial={{ scale: 0.95 }} animate={{ scale: 1 }} exit={{ scale: 0.95 }} onClick={(e) => e.stopPropagation()} className="bg-slate-800 border border-slate-700 rounded-xl max-w-md w-full max-h-[90vh] overflow-y-auto flex flex-col">
+              <div className="flex items-center justify-between p-6 border-b border-slate-700 sticky top-0 bg-slate-800 z-10">
                 <h2 className="text-xl font-bold text-white">Add New PG</h2>
-                <button onClick={() => setShowAddModal(false)} className="text-slate-400 hover:text-white">
+                <button onClick={() => setShowAddModal(false)} className="text-slate-400 hover:text-white transition-colors">
                   <X className="w-5 h-5" />
                 </button>
               </div>
 
-              <div className="p-6 space-y-4">
+              <div className="p-6 space-y-4 flex-1">
                 <input type="text" placeholder="Name" value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} className="w-full bg-slate-700 text-white rounded-lg p-2 border border-slate-600 focus:outline-none focus:ring-2 focus:ring-blue-500" />
                 <select value={formData.type} onChange={e => setFormData({...formData, type: e.target.value})} className="w-full bg-slate-700 text-white rounded-lg p-2 border border-slate-600 focus:outline-none focus:ring-2 focus:ring-blue-500">
                   <option value="pg">PG</option>
@@ -251,7 +251,7 @@ export default function HousingPage() {
                 <input type="text" placeholder="Description" value={formData.description} onChange={e => setFormData({...formData, description: e.target.value})} className="w-full bg-slate-700 text-white rounded-lg p-2 border border-slate-600 focus:outline-none focus:ring-2 focus:ring-blue-500" />
                 <input type="tel" placeholder="Contact" value={formData.contact} onChange={e => setFormData({...formData, contact: e.target.value})} className="w-full bg-slate-700 text-white rounded-lg p-2 border border-slate-600 focus:outline-none focus:ring-2 focus:ring-blue-500" />
                 
-                <button onClick={handleAddPG} className="w-full px-4 py-2 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-lg transition-colors mt-4">
+                <button onClick={handleAddPG} className="w-full px-4 py-2 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-lg transition-colors mt-4 sticky bottom-0">
                   Add PG
                 </button>
               </div>
@@ -263,16 +263,16 @@ export default function HousingPage() {
       {/* Details Modal */}
       <AnimatePresence>
         {showDetailsModal && selectedPG && (
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
-            <motion.div initial={{ scale: 0.95 }} animate={{ scale: 1 }} exit={{ scale: 0.95 }} className="bg-slate-800 border border-slate-700 rounded-xl max-w-md w-full">
-              <div className="flex items-center justify-between p-6 border-b border-slate-700">
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4" onClick={() => setShowDetailsModal(false)}>
+            <motion.div initial={{ scale: 0.95 }} animate={{ scale: 1 }} exit={{ scale: 0.95 }} onClick={(e) => e.stopPropagation()} className="bg-slate-800 border border-slate-700 rounded-xl max-w-md w-full max-h-[90vh] overflow-y-auto flex flex-col">
+              <div className="flex items-center justify-between p-6 border-b border-slate-700 sticky top-0 bg-slate-800 z-10">
                 <h2 className="text-xl font-bold text-white">{selectedPG.name}</h2>
-                <button onClick={() => setShowDetailsModal(false)} className="text-slate-400 hover:text-white">
+                <button onClick={() => setShowDetailsModal(false)} className="text-slate-400 hover:text-white transition-colors">
                   <X className="w-5 h-5" />
                 </button>
               </div>
 
-              <div className="p-6 space-y-4">
+              <div className="p-6 space-y-4 flex-1">
                 <div>
                   <p className="text-slate-400 text-sm">Area</p>
                   <p className="text-white font-semibold">{selectedPG.area}</p>
