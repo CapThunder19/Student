@@ -48,8 +48,6 @@ export default function Community() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 dark:from-slate-900 dark:via-slate-900 dark:to-slate-800">
       <div className="max-w-4xl mx-auto px-4 md:px-8 py-10 flex flex-col h-screen">
-
-        {/* Header */}
         <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="mb-6">
           <div className="flex items-center justify-between">
             <h1 className="text-4xl font-bold text-slate-900 dark:text-white flex items-center gap-3">
@@ -93,7 +91,6 @@ export default function Community() {
           </div>
         </motion.div>
 
-        {/* Messages Feed */}
         <div className="flex-1 overflow-y-auto space-y-3 pr-1 pb-2">
           {messages.length === 0 && (
             <div className="flex flex-col items-center justify-center h-full text-slate-400 dark:text-slate-500">
@@ -151,7 +148,6 @@ export default function Community() {
             })}
           </AnimatePresence>
 
-          {/* Typing indicator */}
           <AnimatePresence>
             {typingUsers.length > 0 && (
               <motion.div
@@ -177,7 +173,6 @@ export default function Community() {
           <div ref={bottomRef} />
         </div>
 
-        {/* Input */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -204,7 +199,6 @@ export default function Community() {
             </motion.button>
           </div>
         </motion.div>
-
       </div>
     </div>
   );

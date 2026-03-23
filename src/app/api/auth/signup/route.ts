@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import dbConnect from '@/lib/mongodb';
 import User from '@/models/User';
-import { generateToken } from '@/lib/auth';
+import jwt from 'jsonwebtoken';
 
 export async function POST(request: NextRequest) {
   try {
@@ -12,7 +12,21 @@ export async function POST(request: NextRequest) {
     // Validation
     if (!email || !password || !name) {
       return NextResponse.json(
-        { error: 'Please provide all required fields' },
+        { error: 'Please provide email, password, and name' },
+        { status: 400 }
+      );
+    }
+
+    if (password.length < 6) {
+      return NextResponse.json(
+        { error: 'Password must be at least 6 characters' },
+        { status: 400 }
+      );
+    }
+
+    if (name.length < 2) {
+      return NextResponse.json(
+        { error: 'Name must be at least 2 characters' },
         { status: 400 }
       );
     }
@@ -26,30 +40,49 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Create new user
-    const user = await User.create({
-      email,
+    // Create new user (password will be hashed by pre-save hook)
+    const newUser = await User.create({
+      email: email.toLowerCase(),
       password,
       name,
     });
 
-    // Generate token
-    const token = generateToken(user._id.toString());
+    // Generate JWT token
+    const token = jwt.sign(
+      { 
+        userId: newUser._id.toString(),
+        email: newUser.email,
+      },
+      process.env.JWT_SECRET || '1234567890',
+      { expiresIn: '7d' }
+    );
 
     return NextResponse.json(
       {
-        message: 'User registered successfully',
+        message: 'Signup successful',
         user: {
-          id: user._id,
-          email: user.email,
-          name: user.name,
+          id: newUser._id,
+          email: newUser.email,
+          name: newUser.name,
         },
         token,
       },
       { status: 201 }
     );
-  } catch (error) {
+  } catch (error: any) {
     console.error('Signup error:', error);
+
+    // Handle MongoDB validation errors
+    if (error.name === 'ValidationError') {
+      const messages = Object.values(error.errors)
+        .map((err: any) => err.message)
+        .join(', ');
+      return NextResponse.json(
+        { error: messages },
+        { status: 400 }
+      );
+    }
+
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }

@@ -90,6 +90,11 @@ export default function SignupPage() {
       localStorage.setItem('token', data.token);
       localStorage.setItem('user', JSON.stringify(data.user));
 
+      // Set cookie for middleware (7 days expiry)
+      const expiryDate = new Date();
+      expiryDate.setDate(expiryDate.getDate() + 7);
+      document.cookie = `token=${data.token}; path=/; expires=${expiryDate.toUTCString()}`;
+
       // Redirect to homepage
       router.push('/');
     } catch (err) {
