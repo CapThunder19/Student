@@ -3,14 +3,17 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { MessageCircle, Send, Heart, Users, LogOut } from 'lucide-react';
 import { useState, useRef, useEffect } from 'react';
-import { useSocket } from '@/lib/useSocket';
+import { useSocket } from '../../lib/useSocket';
+import { ChatMessage } from '../../lib/socket';
 import { signOut, useSession } from 'next-auth/react';
 import Image from 'next/image';
+import Link from 'next/link';
 
 export default function Community() {
   const { data: session } = useSession();
   const { messages, onlineCount, typingUsers, connected, sendMessage, sendTyping, likeMessage } = useSocket();
   const [input, setInput] = useState('');
+  const [activePanel, setActivePanel] = useState<'chat' | 'updates'>('chat');
   const typingTimeout = useRef<NodeJS.Timeout | null>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
 
@@ -44,9 +47,10 @@ export default function Community() {
   const userName = session?.user?.name || 'Anonymous';
   const userEmail = session?.user?.email || '';
   const userImage = session?.user?.image || '';
+  const canSendMessages = Boolean(session?.user?.email);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 dark:from-slate-900 dark:via-slate-900 dark:to-slate-800">
+    <div className="min-h-screen bg-linear-to-br from-slate-50 via-blue-50 to-indigo-100 dark:from-slate-900 dark:via-slate-900 dark:to-slate-800">
       <div className="max-w-4xl mx-auto px-4 md:px-8 py-10 flex flex-col h-screen">
         <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="mb-6">
           <div className="flex items-center justify-between">
@@ -89,7 +93,38 @@ export default function Community() {
               <span>{messages.length} messages</span>
             </div>
           </div>
+
+          <div className="mt-4 inline-flex items-center rounded-xl bg-slate-100 dark:bg-slate-800 p-1">
+            <button
+              onClick={() => setActivePanel('chat')}
+              className={`px-4 py-2 text-sm rounded-lg transition-colors ${
+                activePanel === 'chat'
+                  ? 'bg-white dark:bg-slate-700 text-blue-700 dark:text-blue-300 font-semibold'
+                  : 'text-slate-600 dark:text-slate-300'
+              }`}
+            >
+              Realtime Chat
+            </button>
+            <button
+              onClick={() => setActivePanel('updates')}
+              className={`px-4 py-2 text-sm rounded-lg transition-colors ${
+                activePanel === 'updates'
+                  ? 'bg-white dark:bg-slate-700 text-blue-700 dark:text-blue-300 font-semibold'
+                  : 'text-slate-600 dark:text-slate-300'
+              }`}
+            >
+              Community Updates
+            </button>
+          </div>
         </motion.div>
+
+        {activePanel === 'updates' ? (
+          <div className="flex-1 rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-6 text-slate-600 dark:text-slate-300">
+            <h2 className="text-lg font-semibold text-slate-900 dark:text-white mb-2">Community Updates</h2>
+            <p className="text-sm">Realtime chat is available in the Realtime Chat tab.</p>
+          </div>
+        ) : (
+          <>
 
         <div className="flex-1 overflow-y-auto space-y-3 pr-1 pb-2">
           {messages.length === 0 && (
@@ -100,7 +135,7 @@ export default function Community() {
           )}
 
           <AnimatePresence>
-            {messages.map((msg) => {
+            {messages.map((msg: ChatMessage) => {
               const isMe = msg.author === userName;
               return (
                 <motion.div
@@ -110,7 +145,7 @@ export default function Community() {
                   exit={{ opacity: 0 }}
                   className={`flex gap-3 ${isMe ? 'flex-row-reverse' : ''}`}
                 >
-                  <div className="flex-shrink-0">
+                  <div className="shrink-0">
                     {msg.avatar.startsWith('http') ? (
                       <Image src={msg.avatar} alt={msg.author} width={36} height={36} className="rounded-full" />
                     ) : (
@@ -126,7 +161,7 @@ export default function Community() {
                     </span>
                     <div className={`rounded-2xl px-4 py-3 shadow-sm ${
                       isMe
-                        ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-tr-sm'
+                        ? 'bg-linear-to-r from-blue-600 to-indigo-600 text-white rounded-tr-sm'
                         : 'bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-200 border border-slate-200 dark:border-slate-700 rounded-tl-sm'
                     }`}>
                       <p className="text-sm leading-relaxed">{msg.message}</p>
@@ -178,27 +213,35 @@ export default function Community() {
           animate={{ opacity: 1, y: 0 }}
           className="mt-4 bg-white dark:bg-slate-800 rounded-2xl p-4 shadow-lg border border-slate-200 dark:border-slate-700"
         >
+          {!canSendMessages && (
+            <div className="mb-3 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-800 dark:border-amber-800 dark:bg-amber-950/20 dark:text-amber-300">
+              Please <Link href="/login" className="font-semibold underline">login</Link> to send messages. You can still read community chat.
+            </div>
+          )}
           <div className="flex gap-3">
             <input
               type="text"
               value={input}
               onChange={handleTyping}
               onKeyDown={handleKeyDown}
-              placeholder="Type a message..."
+              placeholder={canSendMessages ? 'Type a message...' : 'Login to send a message'}
+              disabled={!canSendMessages}
               className="flex-1 px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-600 dark:bg-slate-700 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
             />
             <motion.button
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               onClick={handleSend}
-              disabled={!input.trim()}
-              className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-5 py-3 rounded-xl font-semibold flex items-center gap-2 disabled:opacity-40 disabled:cursor-not-allowed"
+              disabled={!input.trim() || !canSendMessages}
+              className="bg-linear-to-r from-blue-600 to-indigo-600 text-white px-5 py-3 rounded-xl font-semibold flex items-center gap-2 disabled:opacity-40 disabled:cursor-not-allowed"
             >
               <Send className="w-4 h-4" />
               Send
             </motion.button>
           </div>
         </motion.div>
+          </>
+        )}
       </div>
     </div>
   );

@@ -2,7 +2,7 @@ import { withAuth } from 'next-auth/middleware';
 import { NextResponse } from 'next/server';
 
 export default withAuth(
-  function middleware(req) {
+  function middleware() {
     return NextResponse.next();
   },
   {
@@ -15,7 +15,6 @@ export default withAuth(
 // Protect these routes — redirect to /login if not authenticated
 export const config = {
   matcher: [
-    '/community/:path*',
     '/profile/:path*',
     '/polls/:path*',
     '/showcase/:path*',

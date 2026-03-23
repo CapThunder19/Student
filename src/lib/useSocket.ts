@@ -169,8 +169,6 @@ export const useSocket = () => {
   }, [currentUser, mergeMessages]);
 
   useEffect(() => {
-    if (!currentUser) return;
-
     const timer = setInterval(fetchPersistedMessages, 4000);
     const kickoff = setTimeout(fetchPersistedMessages, 250);
 
@@ -178,7 +176,7 @@ export const useSocket = () => {
       clearTimeout(kickoff);
       clearInterval(timer);
     };
-  }, [currentUser, fetchPersistedMessages]);
+  }, [fetchPersistedMessages]);
 
   const sendMessage = useCallback((text: string) => {
     if (!globalSocket?.connected || !currentUser || !text.trim()) {
