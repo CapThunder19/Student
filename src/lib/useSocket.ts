@@ -11,7 +11,7 @@ export const useSocket = () => {
   const { data: session } = useSession();
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [onlineCount, setOnlineCount] = useState(0);
-  const [typingUsers, setTypingUsers] = useState<string[]>([]);
+  const [typingById, setTypingById] = useState<Record<string, string>>({});
   const [connected, setConnected] = useState(false);
   const currentUser = session?.user;
 
@@ -32,6 +32,27 @@ export const useSocket = () => {
       );
     });
   }, []);
+
+  const applyReaction = useCallback(
+    ({ messageId, userId, liked, likes }: { messageId: string; userId: string; liked: boolean; likes: number }) => {
+      setMessages((prev) =>
+        prev.map((msg) => {
+          if (msg.id !== messageId) return msg;
+
+          const nextLikedBy = liked
+            ? Array.from(new Set([...msg.likedBy, userId]))
+            : msg.likedBy.filter((id) => id !== userId);
+
+          return {
+            ...msg,
+            likedBy: nextLikedBy,
+            likes: Math.max(likes, 0),
+          };
+        })
+      );
+    },
+    []
+  );
 
   const fetchPersistedMessages = useCallback(async () => {
     try {
@@ -92,6 +113,7 @@ export const useSocket = () => {
       const onDisconnect = (reason: string) => {
         console.log('🔌 Disconnected:', reason);
         setConnected(false);
+        setTypingById({});
       };
 
       const onReceiveMessage = (msg: ChatMessage) => {
@@ -108,22 +130,24 @@ export const useSocket = () => {
 
       const onOnlineCount = (count: number) => setOnlineCount(count);
 
-      const onUserTyping = ({ name, isTyping }: { name: string; isTyping: boolean }) => {
-        const currentName = currentUser?.name;
-        if (name && currentName && name === currentName) return;
-        setTypingUsers((prev) =>
-          isTyping ? [...new Set([...prev, name])] : prev.filter((u) => u !== name)
-        );
+      const onTypingUsers = (
+        users: Array<{ typingId: string; name?: string; userId?: string }>
+      ) => {
+        const next: Record<string, string> = {};
+        for (const entry of users || []) {
+          if (!entry?.typingId || entry.typingId === socket.id) continue;
+          next[entry.typingId] = entry.name || entry.userId || 'Someone';
+        }
+        setTypingById(next);
       };
 
-      const onMessageLiked = ({ messageId, userId }: { messageId: string; userId: string }) => {
-        setMessages((prev) =>
-          prev.map((msg) =>
-            msg.id === messageId && !msg.likedBy.includes(userId)
-              ? { ...msg, likes: msg.likes + 1, likedBy: [...msg.likedBy, userId] }
-              : msg
-          )
-        );
+      const onMessageReaction = (payload: {
+        messageId: string;
+        userId: string;
+        liked: boolean;
+        likes: number;
+      }) => {
+        applyReaction(payload);
       };
 
       socket.on('connect', onConnect);
@@ -132,8 +156,8 @@ export const useSocket = () => {
       socket.on('receive_message', onReceiveMessage);
       socket.on('chat_history', onChatHistory);
       socket.on('online_count', onOnlineCount);
-      socket.on('user_typing', onUserTyping);
-      socket.on('message_liked', onMessageLiked);
+      socket.on('typing_users', onTypingUsers);
+      socket.on('message_reaction', onMessageReaction);
 
       if (socket.connected) {
         setConnected(true);
@@ -147,8 +171,8 @@ export const useSocket = () => {
         socket.off('receive_message', onReceiveMessage);
         socket.off('chat_history', onChatHistory);
         socket.off('online_count', onOnlineCount);
-        socket.off('user_typing', onUserTyping);
-        socket.off('message_liked', onMessageLiked);
+        socket.off('typing_users', onTypingUsers);
+        socket.off('message_reaction', onMessageReaction);
       };
     };
 
@@ -166,7 +190,9 @@ export const useSocket = () => {
     return () => {
       if (cleanup) cleanup();
     };
-  }, [currentUser, mergeMessages]);
+  }, [applyReaction, currentUser, mergeMessages]);
+
+  const typingUsers = Object.values(typingById);
 
   useEffect(() => {
     const timer = setInterval(fetchPersistedMessages, 4000);
@@ -178,7 +204,7 @@ export const useSocket = () => {
     };
   }, [fetchPersistedMessages]);
 
-  const sendMessage = useCallback((text: string) => {
+  const sendMessage = useCallback((text: string, replyTo?: ChatMessage['replyTo']) => {
     if (!globalSocket?.connected || !currentUser || !text.trim()) {
       console.log('❌ Cannot send - connected:', globalSocket?.connected, 'text:', text);
       if (!currentUser || !text.trim()) return;
@@ -188,6 +214,7 @@ export const useSocket = () => {
       author: currentUser.name || 'Anonymous',
       avatar: currentUser.image || '👤',
       message: text.trim(),
+      replyTo,
       timestamp: new Date().toISOString(),
       likes: 0,
       likedBy: [],
@@ -221,14 +248,44 @@ export const useSocket = () => {
   }, [currentUser, mergeMessages]);
 
   const sendTyping = useCallback((isTyping: boolean) => {
-    if (!globalSocket?.connected || !currentUser) return;
-    globalSocket.emit('typing', { name: currentUser.name, isTyping });
+    if (!globalSocket || !currentUser) return;
+    globalSocket.emit('typing', {
+      name: currentUser.name || 'Anonymous',
+      userId: currentUser.email || '',
+      isTyping,
+    });
   }, [currentUser]);
 
-  const likeMessage = useCallback((messageId: string) => {
-    if (!globalSocket?.connected || !currentUser?.email) return;
-    globalSocket.emit('like_message', { messageId, userId: currentUser.email });
-  }, [currentUser]);
+  const likeMessage = useCallback(
+    async (messageId: string) => {
+      if (!currentUser?.email) return;
+
+      if (globalSocket?.connected) {
+        globalSocket.emit('like_message', { messageId, userId: currentUser.email });
+        return;
+      }
+
+      try {
+        const res = await fetch('/api/community/messages', {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ messageId, userId: currentUser.email }),
+        });
+
+        if (!res.ok) return;
+        const data = (await res.json()) as {
+          messageId: string;
+          userId: string;
+          liked: boolean;
+          likes: number;
+        };
+        applyReaction(data);
+      } catch (error) {
+        console.log('⚠️ Failed to update reaction:', error);
+      }
+    },
+    [applyReaction, currentUser]
+  );
 
   return { messages, onlineCount, typingUsers, connected, sendMessage, sendTyping, likeMessage };
 };

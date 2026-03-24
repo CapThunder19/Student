@@ -16,6 +16,7 @@ import {
   BarChart3,
   AlertTriangle,
   Settings,
+  MessageCircle,
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 
@@ -60,7 +61,6 @@ export default function DiscordSidebar() {
 
   const secondaryItems = [
     { icon: User, href: '/profile', label: 'Profile' },
-    { icon: BarChart3, href: '/polls', label: 'Polls' },
     { icon: AlertTriangle, href: '/sos', label: 'SOS' },
     { icon: Settings, href: '#', label: 'Settings' },
   ];
