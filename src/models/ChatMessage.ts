@@ -5,6 +5,11 @@ export interface IChatMessage extends Document {
   author: string;
   avatar: string;
   message: string;
+  replyTo?: {
+    id: string;
+    author: string;
+    message: string;
+  };
   timestamp: Date;
   likes: number;
   likedBy: string[];
@@ -32,6 +37,15 @@ const chatMessageSchema = new Schema<IChatMessage>(
       required: true,
       trim: true,
       maxlength: 2000,
+    },
+    replyTo: {
+      type: {
+        id: { type: String, required: true },
+        author: { type: String, required: true, trim: true },
+        message: { type: String, required: true, trim: true, maxlength: 280 },
+      },
+      required: false,
+      _id: false,
     },
     timestamp: {
       type: Date,
