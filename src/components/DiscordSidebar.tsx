@@ -54,7 +54,6 @@ export default function DiscordSidebar() {
     { icon: Shield, href: '/safecommute', label: 'Safety', color: 'from-red-500 to-red-600' },
     { icon: BookOpen, href: '/academics', label: 'Academics', color: 'from-purple-500 to-purple-600' },
     { icon: Heart, href: '/wellbeing', label: 'Wellbeing', color: 'from-pink-500 to-pink-600' },
-    { icon: MessageCircle, href: '/wellness-chat', label: 'AI Chat', color: 'from-cyan-500 to-cyan-600' },
     { icon: Users, href: '/community', label: 'Community', color: 'from-green-500 to-green-600' },
     { icon: HouseIcon, href: '/housing', label: 'Housing', color: 'from-orange-500 to-orange-600' },
     { icon: Wallet, href: '/budget', label: 'Budget', color: 'from-yellow-500 to-yellow-600' },
