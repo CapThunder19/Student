@@ -1,7 +1,7 @@
 'use client';
 
 import { motion, AnimatePresence } from 'framer-motion';
-import { MessageCircle, Send, Heart, Users, LogOut } from 'lucide-react';
+import { MessageCircle, Send, Heart, Users, LogOut, Reply, Smile, X } from 'lucide-react';
 import { useState, useRef, useEffect } from 'react';
 import { useSocket } from '../../lib/useSocket';
 import { ChatMessage } from '../../lib/socket';
@@ -14,30 +14,83 @@ export default function Community() {
   const { messages, onlineCount, typingUsers, connected, sendMessage, sendTyping, likeMessage } = useSocket();
   const [input, setInput] = useState('');
   const [activePanel, setActivePanel] = useState<'chat' | 'updates'>('chat');
+  const [showEmojiPicker, setShowEmojiPicker] = useState(false);
+  const [replyTarget, setReplyTarget] = useState<ChatMessage | null>(null);
+  const [shouldAutoScroll, setShouldAutoScroll] = useState(true);
   const typingTimeout = useRef<NodeJS.Timeout | null>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
+  const chatScrollRef = useRef<HTMLDivElement>(null);
+  const quickEmojis = ['😀', '😂', '😍', '🔥', '👏', '💯', '🎉', '🤝', '👀', '😅', '😎', '🙏'];
 
   useEffect(() => {
+    if (!shouldAutoScroll) return;
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [messages, typingUsers]);
+  }, [messages, typingUsers, shouldAutoScroll]);
+
+  const handleChatScroll = () => {
+    const container = chatScrollRef.current;
+    if (!container) return;
+
+    const distanceFromBottom = container.scrollHeight - (container.scrollTop + container.clientHeight);
+    setShouldAutoScroll(distanceFromBottom < 80);
+  };
 
   const handleSend = () => {
     if (!input.trim()) return;
-    sendMessage(input);
+    sendMessage(
+      input,
+      replyTarget
+        ? {
+            id: replyTarget.id,
+            author: replyTarget.author,
+            message: replyTarget.message,
+          }
+        : undefined
+    );
     setInput('');
+    setReplyTarget(null);
+    setShowEmojiPicker(false);
     sendTyping(false);
     if (typingTimeout.current) clearTimeout(typingTimeout.current);
   };
 
   const handleTyping = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setInput(e.target.value);
+    const value = e.target.value;
+    setInput(value);
+    sendTyping(Boolean(value.trim()));
+    if (typingTimeout.current) clearTimeout(typingTimeout.current);
+    if (value.trim()) {
+      typingTimeout.current = setTimeout(() => sendTyping(false), 1500);
+    }
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') handleSend();
+  };
+
+  const handleInputBlur = () => {
+    sendTyping(false);
+    if (typingTimeout.current) clearTimeout(typingTimeout.current);
+  };
+
+  const handleEmojiClick = (emoji: string) => {
+    setInput((prev) => `${prev}${emoji}`);
+    setShowEmojiPicker(false);
+    inputRef.current?.focus();
     sendTyping(true);
     if (typingTimeout.current) clearTimeout(typingTimeout.current);
     typingTimeout.current = setTimeout(() => sendTyping(false), 1500);
   };
 
-  const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter') handleSend();
+  const handleReply = (msg: ChatMessage) => {
+    setReplyTarget(msg);
+    setActivePanel('chat');
+    inputRef.current?.focus();
+  };
+
+  const cancelReply = () => {
+    setReplyTarget(null);
   };
 
   const handleLogout = async () => {
@@ -126,7 +179,11 @@ export default function Community() {
         ) : (
           <>
 
-        <div className="flex-1 overflow-y-auto space-y-3 pr-1 pb-2">
+        <div
+          ref={chatScrollRef}
+          onScroll={handleChatScroll}
+          className="flex-1 overflow-y-auto space-y-3 pr-1 pb-2"
+        >
           {messages.length === 0 && (
             <div className="flex flex-col items-center justify-center h-full text-slate-400 dark:text-slate-500">
               <MessageCircle className="w-12 h-12 mb-3 opacity-30" />
@@ -164,19 +221,40 @@ export default function Community() {
                         ? 'bg-linear-to-r from-blue-600 to-indigo-600 text-white rounded-tr-sm'
                         : 'bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-200 border border-slate-200 dark:border-slate-700 rounded-tl-sm'
                     }`}>
+                      {msg.replyTo && (
+                        <div
+                          className={`mb-2 rounded-lg border px-2 py-1.5 text-xs ${
+                            isMe
+                              ? 'border-blue-300/50 bg-white/10 text-blue-100'
+                              : 'border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-700/50 text-slate-600 dark:text-slate-300'
+                          }`}
+                        >
+                          <p className="font-semibold">Reply to {msg.replyTo.author}</p>
+                          <p className="truncate">{msg.replyTo.message}</p>
+                        </div>
+                      )}
                       <p className="text-sm leading-relaxed">{msg.message}</p>
                     </div>
-                    <button
-                      onClick={() => likeMessage(msg.id)}
-                      className={`flex items-center gap-1 mt-1 px-1 text-xs transition-colors ${
-                        msg.likedBy.includes(userEmail)
-                          ? 'text-red-500'
-                          : 'text-slate-400 hover:text-red-400'
-                      }`}
-                    >
-                      <Heart className="w-3 h-3" />
-                      {msg.likes > 0 && <span>{msg.likes}</span>}
-                    </button>
+                    <div className="mt-1 flex items-center gap-3 px-1">
+                      <button
+                        onClick={() => handleReply(msg)}
+                        className="flex items-center gap-1 text-xs text-slate-400 hover:text-blue-500 transition-colors"
+                      >
+                        <Reply className="w-3 h-3" />
+                        Reply
+                      </button>
+                      <button
+                        onClick={() => likeMessage(msg.id)}
+                        className={`flex items-center gap-1 text-xs transition-colors ${
+                          msg.likedBy.includes(userEmail)
+                            ? 'text-red-500'
+                            : 'text-slate-400 hover:text-red-400'
+                        }`}
+                      >
+                        <Heart className="w-3 h-3" />
+                        {msg.likes > 0 && <span>{msg.likes}</span>}
+                      </button>
+                    </div>
                   </div>
                 </motion.div>
               );
@@ -218,16 +296,66 @@ export default function Community() {
               Please <Link href="/login" className="font-semibold underline">login</Link> to send messages. You can still read community chat.
             </div>
           )}
+          {replyTarget && (
+            <div className="mb-3 rounded-lg border border-blue-200 bg-blue-50 px-3 py-2 text-xs text-blue-800 dark:border-blue-900 dark:bg-blue-950/20 dark:text-blue-300 flex items-start justify-between gap-3">
+              <div>
+                <p className="font-semibold">Replying to {replyTarget.author}</p>
+                <p className="truncate">{replyTarget.message}</p>
+              </div>
+              <button
+                onClick={cancelReply}
+                className="text-blue-600 dark:text-blue-300 hover:opacity-80"
+                aria-label="Cancel reply"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+          )}
           <div className="flex gap-3">
-            <input
-              type="text"
-              value={input}
-              onChange={handleTyping}
-              onKeyDown={handleKeyDown}
-              placeholder={canSendMessages ? 'Type a message...' : 'Login to send a message'}
-              disabled={!canSendMessages}
-              className="flex-1 px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-600 dark:bg-slate-700 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
-            />
+            <div className="relative flex-1 flex items-center gap-2">
+              <button
+                onClick={() => setShowEmojiPicker((prev) => !prev)}
+                disabled={!canSendMessages}
+                className="shrink-0 rounded-xl border border-slate-200 dark:border-slate-600 dark:bg-slate-700 p-3 text-slate-500 dark:text-slate-300 hover:text-blue-500 transition-colors disabled:opacity-40"
+                aria-label="Open emoji picker"
+              >
+                <Smile className="w-4 h-4" />
+              </button>
+              <input
+                ref={inputRef}
+                type="text"
+                value={input}
+                onChange={handleTyping}
+                onKeyDown={handleKeyDown}
+                onBlur={handleInputBlur}
+                placeholder={canSendMessages ? 'Type a message...' : 'Login to send a message'}
+                disabled={!canSendMessages}
+                className="flex-1 px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-600 dark:bg-slate-700 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+              />
+
+              <AnimatePresence>
+                {showEmojiPicker && canSendMessages && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 8 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: 8 }}
+                    className="absolute bottom-14 left-0 z-20 w-72 rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-800 shadow-xl p-3"
+                  >
+                    <div className="grid grid-cols-6 gap-1.5">
+                      {quickEmojis.map((emoji) => (
+                        <button
+                          key={emoji}
+                          onClick={() => handleEmojiClick(emoji)}
+                          className="rounded-lg p-2 text-lg hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors"
+                        >
+                          {emoji}
+                        </button>
+                      ))}
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
             <motion.button
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
@@ -246,3 +374,4 @@ export default function Community() {
     </div>
   );
 }
+
