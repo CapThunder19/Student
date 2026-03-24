@@ -1,11 +1,11 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Outfit, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { Providers } from "./providers";
-import DiscordSidebar from "@/components/DiscordSidebar";
+import AppNavbar from "@/components/AppNavbar";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const outfit = Outfit({
+  variable: "--font-outfit",
   subsets: ["latin"],
 });
 
@@ -27,12 +27,12 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+      className={`${outfit.variable} ${geistMono.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex bg-slate-900">
+      <body className="min-h-full font-sans text-slate-900 transition-colors duration-500 bg-[#FDF9F1]">
         <Providers>
-          <DiscordSidebar />
-          <main className="flex-1 overflow-auto">
+          <AppNavbar />
+          <main className="w-full relative">
             {children}
           </main>
         </Providers>

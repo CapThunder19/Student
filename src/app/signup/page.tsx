@@ -36,7 +36,7 @@ export default function SignupPage() {
       ...prev,
       [name]: value,
     }));
-    
+
     if (name === 'password') {
       setPasswordStrength(calculatePasswordStrength(value));
     }
@@ -260,16 +260,15 @@ export default function SignupPage() {
                   >
                     <div className="flex items-center justify-between mb-2">
                       <span className="text-xs font-medium text-slate-600 dark:text-slate-400">Password Strength</span>
-                      <span className={`text-xs font-semibold ${
-                        passwordStrength <= 1 ? 'text-red-600' :
-                        passwordStrength <= 2 ? 'text-orange-600' :
-                        passwordStrength <= 3 ? 'text-yellow-600' :
-                        'text-green-600'
-                      }`}>
+                      <span className={`text-xs font-semibold ${passwordStrength <= 1 ? 'text-red-600' :
+                          passwordStrength <= 2 ? 'text-orange-600' :
+                            passwordStrength <= 3 ? 'text-yellow-600' :
+                              'text-green-600'
+                        }`}>
                         {passwordStrength <= 1 ? 'Weak' :
-                         passwordStrength <= 2 ? 'Fair' :
-                         passwordStrength <= 3 ? 'Good' :
-                         'Strong'}
+                          passwordStrength <= 2 ? 'Fair' :
+                            passwordStrength <= 3 ? 'Good' :
+                              'Strong'}
                       </span>
                     </div>
                     <div className="w-full h-2 bg-slate-200 dark:bg-slate-700 rounded-full overflow-hidden">
@@ -277,12 +276,11 @@ export default function SignupPage() {
                         initial={{ width: 0 }}
                         animate={{ width: `${(passwordStrength / 5) * 100}%` }}
                         transition={{ duration: 0.3 }}
-                        className={`h-full transition-colors ${
-                          passwordStrength <= 1 ? 'bg-red-500' :
-                          passwordStrength <= 2 ? 'bg-orange-500' :
-                          passwordStrength <= 3 ? 'bg-yellow-500' :
-                          'bg-green-500'
-                        }`}
+                        className={`h-full transition-colors ${passwordStrength <= 1 ? 'bg-red-500' :
+                            passwordStrength <= 2 ? 'bg-orange-500' :
+                              passwordStrength <= 3 ? 'bg-yellow-500' :
+                                'bg-green-500'
+                          }`}
                       />
                     </div>
                   </motion.div>
