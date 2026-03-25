@@ -216,6 +216,31 @@ export default function WellbeingPage() {
             </div>
           </motion.section>
 
+          {/* Soothing Sound Music Player */}
+          <motion.section
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.12 }}
+            className="mb-12"
+          >
+            <h2 className="text-2xl font-bold text-white mb-4 flex items-center gap-2">
+              <Sparkles className="w-6 h-6 text-indigo-400" /> Soothing Sound
+            </h2>
+            <div className="bg-slate-800 border border-slate-700 rounded-xl p-6 flex flex-col gap-3">
+              <p className="text-slate-400 text-sm">
+                Plug in your earphones, close your eyes, and let this gentle ambient track help you unwind.
+              </p>
+              <audio controls className="w-full mt-2 rounded-lg">
+                <source src="/audio/soothing-sound.mp3" type="audio/mpeg" />
+                Your browser does not support the audio element.
+              </audio>
+              <p className="text-xs text-slate-500 mt-1">
+                If you don&apos;t hear anything, make sure the file is available at
+                <span className="font-mono"> /public/audio/soothing-sound.mp3</span> in the project.
+              </p>
+            </div>
+          </motion.section>
+
           {/* Wellness Reminders */}
           <motion.section initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }} className="mb-12">
             <h2 className="text-2xl font-bold text-white mb-6 flex items-center gap-2">
