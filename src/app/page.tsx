@@ -3,6 +3,7 @@
 import { motion, useScroll, useTransform, useSpring } from 'framer-motion';
 import Link from 'next/link';
 import { useRef } from 'react';
+import { useSession, signOut } from 'next-auth/react';
 import {
   Shield,
   BookOpen,
@@ -69,6 +70,8 @@ const modules = [
 ];
 
 export default function Home() {
+  const { data: session } = useSession();
+
   return (
     <div className="relative w-full text-[#1A1A1A] font-sans selection:bg-[#EA7A34] selection:text-[#1A1A1A] bg-[#FDF9F1]">
       {/* Navbar - Sticky corner items */}
@@ -78,8 +81,24 @@ export default function Home() {
           STUDENT<span className="text-[#EA7A34]">.APP</span>
         </div>
         {/* Top right actions */}
-        <div className="flex gap-4 pointer-events-auto mr-8 md:mr-16 lg:mr-20">
-          {/* Auth links removed temporarily as per request */}
+        <div className="flex gap-3 sm:gap-4 pointer-events-auto mr-0 md:mr-8 lg:mr-10 items-center">
+          {session ? (
+            <button 
+              onClick={() => signOut()}
+              className="bg-[#1A1A1A] text-white px-6 py-2.5 rounded-full font-bold border-[2px] border-[#1A1A1A] shadow-[4px_4px_0_0_#EA7A34] hover:bg-[#EA7A34] hover:text-[#1A1A1A] hover:shadow-[2px_2px_0_0_#1A1A1A] hover:translate-y-1 transition-all"
+            >
+              Log Out
+            </button>
+          ) : (
+            <>
+              <Link href="/login" className="bg-white text-[#1A1A1A] px-6 py-2.5 rounded-[12px] font-bold border-[2px] border-[#1A1A1A] shadow-[4px_4px_0_0_#1A1A1A] hover:translate-y-1 hover:shadow-[2px_2px_0_0_#1A1A1A] transition-all">
+                Log In
+              </Link>
+              <Link href="/signup" className="bg-[#A594F1] text-[#1A1A1A] px-6 py-2.5 rounded-[12px] font-bold border-[2px] border-[#1A1A1A] shadow-[4px_4px_0_0_#1A1A1A] hover:bg-[#9281e0] hover:translate-y-1 hover:shadow-[2px_2px_0_0_#1A1A1A] transition-all">
+                Register
+              </Link>
+            </>
+          )}
         </div>
       </nav>
 
