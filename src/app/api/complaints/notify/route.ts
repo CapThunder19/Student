@@ -40,7 +40,8 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Complaint not found' }, { status: 404 });
     }
 
-    const remainingMs = getRemainingMs(complaint.lastAdminNotificationAt, complaint.severity);
+    const severity = complaint.severity as ComplaintSeverity;
+    const remainingMs = getRemainingMs(complaint.lastAdminNotificationAt, severity);
     if (remainingMs > 0) {
       return NextResponse.json(
         {
@@ -63,7 +64,7 @@ export async function POST(req: NextRequest) {
       complaintId,
       adminNotificationCount: complaint.adminNotificationCount,
       lastAdminNotificationAt: complaint.lastAdminNotificationAt,
-      cooldownMinutes: cooldownMinutes[complaint.severity],
+      cooldownMinutes: cooldownMinutes[severity],
     });
   } catch (error) {
     console.error('Failed to resend complaint notification:', error);
