@@ -37,7 +37,7 @@ export default function ComplaintSection() {
       <div className="flex items-center gap-4 mb-6">
         <motion.div
           whileHover={{ scale: 1.1, rotate: 15 }}
-          className="w-16 h-16 bg-gradient-to-br from-red-100 to-red-50 dark:from-red-900 dark:to-red-800 rounded-xl flex items-center justify-center shadow-md"
+          className="w-16 h-16 bg-linear-to-br from-red-100 to-red-50 dark:from-red-900 dark:to-red-800 rounded-xl flex items-center justify-center shadow-md"
         >
           <AlertCircle className="w-8 h-8 text-red-600 dark:text-red-400" />
         </motion.div>
@@ -138,7 +138,7 @@ export default function ComplaintSection() {
               type="submit"
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
-              className="flex-1 bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white font-semibold py-3 rounded-lg transition-all flex items-center justify-center gap-2"
+              className="flex-1 bg-linear-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white font-semibold py-3 rounded-lg transition-all flex items-center justify-center gap-2"
             >
               <CheckCircle className="w-4 h-4" />
               Submit Complaint

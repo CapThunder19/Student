@@ -205,7 +205,7 @@ export default function WellbeingPage() {
               <motion.div 
                 animate={{ scale: breathing ? [1, 1.5, 1.5, 1] : 1 }} 
                 transition={{ duration: 10, times: [0, 0.4, 0.6, 1], ease: "easeInOut", repeat: breathing ? Infinity : 0 }} 
-                className="w-48 h-48 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full mx-auto mb-6 flex items-center justify-center font-bold text-white text-2xl shadow-lg shadow-blue-500/50"
+                className="w-48 h-48 bg-linear-to-br from-blue-500 to-blue-600 rounded-full mx-auto mb-6 flex items-center justify-center font-bold text-white text-2xl shadow-lg shadow-blue-500/50"
               >
                 {breathingPhase}
               </motion.div>
@@ -229,7 +229,7 @@ export default function WellbeingPage() {
                 </div>
                 <h3 className="text-lg font-bold text-white mb-2">Water Reminder</h3>
                 <p className="text-slate-400 text-sm mb-4">Stay hydrated to keep your focus sharp</p>
-                <div className="flex items-center gap-3 w-full max-w-[200px] mb-4">
+                <div className="flex items-center gap-3 w-full max-w-50 mb-4">
                   <Clock className="w-5 h-5 text-slate-500 hidden sm:block" />
                   <input type="number" min="15" max="180" step="15" value={waterInterval} onChange={(e) => setWaterInterval(Number(e.target.value))} className="w-full bg-slate-900 border border-slate-700 text-white px-3 py-2 rounded-lg outline-none" disabled={waterActive} />
                   <span className="text-slate-400 text-sm">mins</span>
@@ -246,7 +246,7 @@ export default function WellbeingPage() {
                 </div>
                 <h3 className="text-lg font-bold text-white mb-2">Break Reminder</h3>
                 <p className="text-slate-400 text-sm mb-4">Take regular breaks to avoid burnout</p>
-                <div className="flex items-center gap-3 w-full max-w-[200px] mb-4">
+                <div className="flex items-center gap-3 w-full max-w-50 mb-4">
                   <Clock className="w-5 h-5 text-slate-500 hidden sm:block" />
                   <input type="number" min="15" max="180" step="15" value={breakInterval} onChange={(e) => setBreakInterval(Number(e.target.value))} className="w-full bg-slate-900 border border-slate-700 text-white px-3 py-2 rounded-lg outline-none" disabled={breakActive} />
                   <span className="text-slate-400 text-sm">mins</span>
@@ -267,7 +267,7 @@ export default function WellbeingPage() {
                 <span className="text-slate-400">Current: </span>
                 <div className="flex items-center gap-2">
                   <div className="flex-1 bg-slate-700 rounded-full h-2 w-24">
-                    <div className="bg-gradient-to-r from-yellow-500 to-red-500 h-2 rounded-full" style={{ width: `${(stress / 10) * 100}%` }} />
+                    <div className="bg-linear-to-r from-yellow-500 to-red-500 h-2 rounded-full" style={{ width: `${(stress / 10) * 100}%` }} />
                   </div>
                   <span className="text-white font-bold">{stress}/10</span>
                 </div>
@@ -280,7 +280,7 @@ export default function WellbeingPage() {
             <h2 className="text-2xl font-bold text-white mb-6 flex items-center gap-2">
               <Sparkles className="w-6 h-6 text-yellow-400" /> AI Wellness Recommendations
             </h2>
-            <div className="bg-gradient-to-r from-slate-800 to-slate-800 border border-purple-700 rounded-xl p-8">
+            <div className="bg-linear-to-r from-slate-800 to-slate-800 border border-purple-700 rounded-xl p-8">
               {loading ? (
                 <div className="flex items-center justify-center gap-2 text-slate-400">
                   <Loader className="w-5 h-5 animate-spin" />

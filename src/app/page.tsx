@@ -10,12 +10,13 @@ import {
   Users,
   Home as HouseIcon,
   Wallet,
+  Megaphone,
   ArrowRight,
   Search,
 } from 'lucide-react';
 
 const THIN_SHADOW = "shadow-sm hover:shadow-md transition-all duration-300";
-const THIN_BORDER = "border-[2px] border-[#1A1A1A]";
+const THIN_BORDER = "border-2 border-[#1A1A1A]";
 
 const modules = [
   {
@@ -41,6 +42,14 @@ const modules = [
     href: '/wellbeing',
     color: 'bg-[#FDC029]', // Yellow
     align: 'left',
+  },
+  {
+    icon: Megaphone,
+    title: 'Complaints',
+    description: 'Raise issues with red, yellow, or green labels so the urgent ones get attention first.',
+    href: '/complaints',
+    color: 'bg-[#EA7A34]',
+    align: 'right',
   },
   {
     icon: Users,
@@ -83,9 +92,9 @@ export default function Home() {
   return (
     <div className="relative w-full text-[#1A1A1A] font-sans selection:bg-[#EA7A34] selection:text-[#1A1A1A] bg-[#FDF9F1]">
       {/* Navbar - Sticky corner items */}
-      <nav className="fixed top-0 w-full p-4 sm:p-8 flex justify-between items-start z-[100] pointer-events-none">
+      <nav className="fixed top-0 w-full p-4 sm:p-8 flex justify-between items-start z-100 pointer-events-none">
         {/* Logo Box */}
-        <div className="text-2xl sm:text-3xl font-black tracking-tighter pointer-events-auto bg-white px-6 py-3 rounded-[24px] border-[2px] border-[#1A1A1A] shadow-sm transform -rotate-2 hover:rotate-0 transition-transform">
+        <div className="text-2xl sm:text-3xl font-black tracking-tighter pointer-events-auto bg-white px-6 py-3 rounded-3xl border-2 border-[#1A1A1A] shadow-sm transform -rotate-2 hover:rotate-0 transition-transform">
           STUDENT<span className="text-[#EA7A34]">.APP</span>
         </div>
         {/* Top right actions */}
@@ -93,16 +102,16 @@ export default function Home() {
           {isLoggedIn ? (
             <button 
               onClick={handleLogout}
-              className="bg-[#1A1A1A] text-white px-6 py-2.5 rounded-full font-bold border-[2px] border-[#1A1A1A] shadow-[4px_4px_0_0_#EA7A34] hover:bg-[#EA7A34] hover:text-[#1A1A1A] hover:shadow-[2px_2px_0_0_#1A1A1A] hover:translate-y-1 transition-all"
+              className="bg-[#1A1A1A] text-white px-6 py-2.5 rounded-full font-bold border-2 border-[#1A1A1A] shadow-[4px_4px_0_0_#EA7A34] hover:bg-[#EA7A34] hover:text-[#1A1A1A] hover:shadow-[2px_2px_0_0_#1A1A1A] hover:translate-y-1 transition-all"
             >
               Log Out
             </button>
           ) : (
             <>
-              <Link href="/login" className="bg-white text-[#1A1A1A] px-6 py-2.5 rounded-[12px] font-bold border-[2px] border-[#1A1A1A] shadow-[4px_4px_0_0_#1A1A1A] hover:translate-y-1 hover:shadow-[2px_2px_0_0_#1A1A1A] transition-all">
+              <Link href="/login" className="bg-white text-[#1A1A1A] px-6 py-2.5 rounded-xl font-bold border-2 border-[#1A1A1A] shadow-[4px_4px_0_0_#1A1A1A] hover:translate-y-1 hover:shadow-[2px_2px_0_0_#1A1A1A] transition-all">
                 Log In
               </Link>
-              <Link href="/signup" className="bg-[#A594F1] text-[#1A1A1A] px-6 py-2.5 rounded-[12px] font-bold border-[2px] border-[#1A1A1A] shadow-[4px_4px_0_0_#1A1A1A] hover:bg-[#9281e0] hover:translate-y-1 hover:shadow-[2px_2px_0_0_#1A1A1A] transition-all">
+              <Link href="/signup" className="bg-[#A594F1] text-[#1A1A1A] px-6 py-2.5 rounded-xl font-bold border-2 border-[#1A1A1A] shadow-[4px_4px_0_0_#1A1A1A] hover:bg-[#9281e0] hover:translate-y-1 hover:shadow-[2px_2px_0_0_#1A1A1A] transition-all">
                 Register
               </Link>
             </>
@@ -126,16 +135,16 @@ export default function Home() {
         transition={{ delay: 1, type: 'spring' }}
         className="fixed bottom-6 sm:bottom-8 z-50 px-4 w-full flex justify-center pointer-events-none transition-all"
       >
-        <div className="pointer-events-auto bg-white border-[2px] border-[#1A1A1A] rounded-[40px] shadow-md p-2 flex items-center gap-2 w-full max-w-md transform transition-transform hover:scale-105">
-          <div className="w-12 h-12 bg-[#FDC029] rounded-full border-[2px] border-[#1A1A1A] flex items-center justify-center shrink-0">
-            <Search className="w-6 h-6 stroke-[2]" />
+        <div className="pointer-events-auto bg-white border-2 border-[#1A1A1A] rounded-[40px] shadow-md p-2 flex items-center gap-2 w-full max-w-md transform transition-transform hover:scale-105">
+          <div className="w-12 h-12 bg-[#FDC029] rounded-full border-2 border-[#1A1A1A] flex items-center justify-center shrink-0">
+            <Search className="w-6 h-6 stroke-2" />
           </div>
           <input
             type="text"
             placeholder="Search features..."
             className="flex-1 bg-transparent border-none outline-none font-bold text-lg placeholder:text-[#1A1A1A]/40 px-2"
           />
-          <Link href="/dashboard" className="bg-[#1A1A1A] text-white px-6 py-3 rounded-full font-bold whitespace-nowrap hidden sm:block shrink-0 border-[2px] border-[#1A1A1A] hover:bg-[#EA7A34] hover:text-[#1A1A1A] transition-all">
+          <Link href="/dashboard" className="bg-[#1A1A1A] text-white px-6 py-3 rounded-full font-bold whitespace-nowrap hidden sm:block shrink-0 border-2 border-[#1A1A1A] hover:bg-[#EA7A34] hover:text-[#1A1A1A] transition-all">
             Dashboard
           </Link>
         </div>
@@ -157,9 +166,9 @@ const FlyingIcon = ({ icon: Icon, color, progress, startX, startY, startScale = 
     <span className="inline-block align-middle mx-1 sm:mx-3 z-10">
       <motion.span
         style={{ x, y, scale, rotate }}
-        className={`inline-flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 lg:w-14 lg:h-14 border-[2px] border-[#1A1A1A] ${color} rounded-[12px] lg:rounded-[20px] overflow-hidden origin-center`}
+        className={`inline-flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 lg:w-14 lg:h-14 border-2 border-[#1A1A1A] ${color} rounded-xl lg:rounded-[20px] overflow-hidden origin-center`}
       >
-        <Icon className="w-5 h-5 sm:w-6 sm:h-6 lg:w-7 lg:h-7 text-[#1A1A1A] stroke-[2]" />
+        <Icon className="w-5 h-5 sm:w-6 sm:h-6 lg:w-7 lg:h-7 text-[#1A1A1A] stroke-2" />
       </motion.span>
     </span>
   )
@@ -178,9 +187,9 @@ function HeroSection() {
 
         {/* TOP: Main Title */}
         <div className="text-center w-full z-10 flex flex-col items-center mb-auto pt-10">
-          <h1 className="text-5xl sm:text-6xl lg:text-[6.5rem] font-black leading-[1.0] tracking-tighter text-[#1A1A1A]">
+          <h1 className="text-5xl sm:text-6xl lg:text-[6.5rem] font-black leading-none tracking-tighter text-[#1A1A1A]">
             Your campus life, <br />
-            <span className="bg-[#EA7A34] px-8 py-3 rounded-[40px] border-[2px] border-[#1A1A1A] inline-block -rotate-2 mt-4 shadow-sm">synchronized.</span>
+            <span className="bg-[#EA7A34] px-8 py-3 rounded-[40px] border-2 border-[#1A1A1A] inline-block -rotate-2 mt-4 shadow-sm">synchronized.</span>
           </h1>
         </div>
 
@@ -189,7 +198,7 @@ function HeroSection() {
 
         {/* BOTTOM: Sentence waiting for icons */}
         <div className="text-center w-full relative z-10 flex flex-col items-center pb-20">
-          <div className="text-2xl sm:text-4xl lg:text-[45px] leading-[1.8] lg:leading-[2.0] normal-case font-bold text-[#1A1A1A] max-w-6xl w-full tracking-tight">
+          <div className="text-2xl sm:text-4xl lg:text-[45px] leading-[1.8] lg:leading-loose normal-case font-bold text-[#1A1A1A] max-w-6xl w-full tracking-tight">
             Manage your
             <FlyingIcon icon={BookOpen} color="bg-[#A594F1]" progress={scrollYProgress} startX="-25vw" startY="-50vh" triggerEnd={0.4} rotateOffset={-35} startScale={3} />
             classes, track your
@@ -212,7 +221,7 @@ function HeroSection() {
           <motion.div
             animate={{ y: [0, 8, 0] }}
             transition={{ duration: 1.5, repeat: Infinity }}
-            className="w-6 h-10 border-[3px] sm:border-[4px] border-[#1A1A1A] rounded-full flex justify-center p-1.5 bg-white shadow-md mt-1"
+            className="w-6 h-10 border-[3px] sm:border-4 border-[#1A1A1A] rounded-full flex justify-center p-1.5 bg-white shadow-md mt-1"
           >
             <div className="w-1.5 h-2.5 bg-[#1A1A1A] rounded-full" />
           </motion.div>
@@ -240,26 +249,26 @@ function ModulesSection() {
   const smoothProgress = useSpring(scrollYProgress, { damping: 20, stiffness: 100 });
 
   return (
-    <div ref={ref} className="relative z-10 bg-[#EA7A34] rounded-t-[40px] sm:rounded-t-[80px] border-t-[2px] border-[#1A1A1A] pb-32 min-h-screen w-full mt-[-2px] pt-24 sm:pt-40 shadow-xl overflow-hidden">
+    <div ref={ref} className="relative z-10 bg-[#EA7A34] rounded-t-[40px] sm:rounded-t-[80px] border-t-2 border-[#1A1A1A] pb-32 min-h-screen w-full -mt-0.5 pt-24 sm:pt-40 shadow-xl overflow-hidden">
 
       {/* Introduction Header */}
       <motion.div style={{ scale: contentScale }} className="flex flex-col items-center justify-center text-center px-4 w-full origin-top mb-32 z-20 relative">
-        <div className="flex items-center gap-3 bg-[#1A1A1A] text-[#FDF9F1] px-6 py-2 rounded-full border-[2px] border-[#1A1A1A] shadow-sm mb-8">
+        <div className="flex items-center gap-3 bg-[#1A1A1A] text-[#FDF9F1] px-6 py-2 rounded-full border-2 border-[#1A1A1A] shadow-sm mb-8">
           <span className="font-black bg-[#FDF9F1] text-[#1A1A1A] w-6 h-6 rounded-full flex items-center justify-center text-xs">1</span>
           <span className="font-bold uppercase tracking-widest text-sm">Modules</span>
         </div>
         <h2 className="text-[14vw] sm:text-[10vw] font-black leading-[0.8] tracking-tighter text-[#1A1A1A]">
           Explore the <br /> Features
         </h2>
-        <p className="mt-10 text-xl sm:text-2xl font-bold bg-[#FDF9F1] p-4 rounded-2xl border-[2px] border-[#1A1A1A] transform -rotate-1 max-w-2xl px-8 shadow-sm">
+        <p className="mt-10 text-xl sm:text-2xl font-bold bg-[#FDF9F1] p-4 rounded-2xl border-2 border-[#1A1A1A] transform -rotate-1 max-w-2xl px-8 shadow-sm">
           Everything designed to make your campus life seamless and highly organized.
         </p>
       </motion.div>
 
       {/* Diagram & Cards */}
       <div className="w-full max-w-5xl mx-auto relative px-4 z-10">
-        <div className="absolute left-1/2 top-0 bottom-0 w-[2px] -translate-x-1/2 hidden lg:block z-0">
-          <div className="absolute inset-0 bg-transparent border-l-[2px] border-dashed border-[#1A1A1A]/30" />
+        <div className="absolute left-1/2 top-0 bottom-0 w-0.5 -translate-x-1/2 hidden lg:block z-0">
+          <div className="absolute inset-0 bg-transparent border-l-2 border-dashed border-[#1A1A1A]/30" />
           <motion.div className="w-full bg-[#1A1A1A] origin-top relative z-10" style={{ scaleY: smoothProgress, height: '100%' }} />
         </div>
 
@@ -275,21 +284,21 @@ function ModulesSection() {
 
 function FooterCTASection() {
   return (
-    <div className="relative z-20 bg-[#1A1A1A] rounded-t-[40px] sm:rounded-t-[80px] border-t-[4px] border-[#1A1A1A] min-h-[90vh] w-full flex flex-col items-center justify-center px-4 mt-[-40px] sm:mt-[-80px] pt-32 pb-40 shadow-xl">
+    <div className="relative z-20 bg-[#1A1A1A] rounded-t-[40px] sm:rounded-t-[80px] border-t-4 border-[#1A1A1A] min-h-[90vh] w-full flex flex-col items-center justify-center px-4 -mt-10 sm:-mt-20 pt-32 pb-40 shadow-xl">
 
       <div className="max-w-4xl text-center mb-24 relative px-4 flex flex-col items-center z-10">
         <ScrollingText text="Bring order to chaos." />
         <ScrollingText text="Empowering your journey." />
       </div>
 
-      <div className="bg-[#F2E9E1] text-[#1A1A1A] p-8 sm:p-24 rounded-[40px] w-full max-w-5xl border-[4px] border-[#1A1A1A] shadow-[16px_16px_0_0_#A7F3D0] flex flex-col items-center text-center transform -rotate-1 relative z-20">
+      <div className="bg-[#F2E9E1] text-[#1A1A1A] p-8 sm:p-24 rounded-[40px] w-full max-w-5xl border-4 border-[#1A1A1A] shadow-[16px_16px_0_0_#A7F3D0] flex flex-col items-center text-center transform -rotate-1 relative z-20">
         <h2 className="text-5xl sm:text-7xl lg:text-8xl font-black mb-6 uppercase tracking-tighter leading-[0.9]">
           Ready to <br />start?
         </h2>
         <p className="text-xl sm:text-2xl mb-12 max-w-2xl text-[#1A1A1A]/80 font-bold tracking-tight">
           Join thousands of students and simplify your campus life today.
         </p>
-        <Link href="/dashboard" className="text-2xl sm:text-4xl font-black bg-[#EA7A34] text-[#1A1A1A] px-10 py-6 sm:px-14 sm:py-8 rounded-[40px] border-[4px] border-[#1A1A1A] hover:bg-[#FDC029] transition-all shadow-[8px_8px_0_0_#1A1A1A] hover:shadow-[12px_12px_0_0_#1A1A1A] hover:-translate-y-2 flex items-center gap-4 group">
+        <Link href="/dashboard" className="text-2xl sm:text-4xl font-black bg-[#EA7A34] text-[#1A1A1A] px-10 py-6 sm:px-14 sm:py-8 rounded-[40px] border-4 border-[#1A1A1A] hover:bg-[#FDC029] transition-all shadow-[8px_8px_0_0_#1A1A1A] hover:shadow-[12px_12px_0_0_#1A1A1A] hover:-translate-y-2 flex items-center gap-4 group">
           ENTER NOW
           <ArrowRight className="w-10 h-10 sm:w-12 sm:h-12 group-hover:translate-x-3 transition-transform" strokeWidth={4} />
         </Link>
@@ -320,22 +329,22 @@ function ModuleCard({ mod, index }: { mod: any, index: number }) {
       className={`flex flex-col lg:flex-row items-center gap-4 sm:gap-12 ${isLeft ? 'lg:flex-row' : 'lg:flex-row-reverse'} relative z-10 w-full`}
     >
       <div className={`flex-1 flex ${isLeft ? 'justify-end' : 'justify-start'} w-full lg:w-1/2`}>
-        <div className={`w-full max-w-[440px] ${mod.color} p-8 sm:p-10 rounded-[40px] ${THIN_BORDER} ${THIN_SHADOW} transform transition-transform hover:-translate-y-2 group relative z-20`}>
+          <div className={`w-full max-w-md ${mod.color} p-8 sm:p-10 rounded-[40px] ${THIN_BORDER} ${THIN_SHADOW} transform transition-transform hover:-translate-y-2 group relative z-20`}>
 
-          <div className={`hidden lg:flex absolute top-1/2 -translate-y-1/2 w-12 h-12 rounded-full border-[2px] border-[#1A1A1A] bg-[#FDF9F1] z-20 items-center justify-center shadow-sm ${isLeft ? '-right-[4.2rem] translate-x-1/2' : '-left-[4.2rem] -translate-x-1/2'}`}>
+          <div className={`hidden lg:flex absolute top-1/2 -translate-y-1/2 w-12 h-12 rounded-full border-2 border-[#1A1A1A] bg-[#FDF9F1] z-20 items-center justify-center shadow-sm ${isLeft ? '-right-[4.2rem] translate-x-1/2' : '-left-[4.2rem] -translate-x-1/2'}`}>
             <div className="w-3 h-3 rounded-full bg-[#1A1A1A]" />
           </div>
 
-          <div className={`hidden lg:block absolute top-1/2 -translate-y-1/2 h-[2px] bg-[#1A1A1A] z-10 ${isLeft ? '-right-12 w-12' : '-left-12 w-12'}`} />
+          <div className={`hidden lg:block absolute top-1/2 -translate-y-1/2 h-0.5 bg-[#1A1A1A] z-10 ${isLeft ? '-right-12 w-12' : '-left-12 w-12'}`} />
 
-          <div className={`w-20 h-20 rounded-3xl bg-white border-[2px] border-[#1A1A1A] flex items-center justify-center mb-6 shadow-sm group-hover:scale-110 transition-transform origin-bottom-left`}>
+          <div className={`w-20 h-20 rounded-3xl bg-white border-2 border-[#1A1A1A] flex items-center justify-center mb-6 shadow-sm group-hover:scale-110 transition-transform origin-bottom-left`}>
             <mod.icon className="w-10 h-10 text-[#1A1A1A]" strokeWidth={2} />
           </div>
 
-          <h3 className="text-3xl sm:text-4xl font-black mb-4 tracking-tighter leading-tight bg-white inline-block px-4 py-1 rounded-[16px] border-[2px] border-[#1A1A1A] shadow-sm">{mod.title}</h3>
+          <h3 className="text-3xl sm:text-4xl font-black mb-4 tracking-tighter leading-tight bg-white inline-block px-4 py-1 rounded-2xl border-2 border-[#1A1A1A] shadow-sm">{mod.title}</h3>
           <p className="text-xl font-bold text-[#1A1A1A] leading-snug mb-8">{mod.description}</p>
 
-          <Link href={mod.href} className="inline-flex items-center gap-3 font-black text-xl bg-white px-8 py-4 rounded-[20px] border-[2px] border-[#1A1A1A] shadow-sm hover:bg-[#1A1A1A] hover:text-[#FDF9F1] transition-colors group/btn">
+          <Link href={mod.href} className="inline-flex items-center gap-3 font-black text-xl bg-white px-8 py-4 rounded-[20px] border-2 border-[#1A1A1A] shadow-sm hover:bg-[#1A1A1A] hover:text-[#FDF9F1] transition-colors group/btn">
             Explore
             <ArrowRight className="w-6 h-6 group-hover/btn:translate-x-2 transition-transform" strokeWidth={2} />
           </Link>
@@ -361,7 +370,7 @@ function ScrollingText({ text }: { text: string }) {
     <motion.h3
       ref={ref}
       style={{ opacity, scale }}
-      className="text-4xl sm:text-5xl lg:text-7xl font-black tracking-tighter leading-[1] mb-6 inline-block text-[#FDF9F1]"
+      className="text-4xl sm:text-5xl lg:text-7xl font-black tracking-tighter leading-none mb-6 inline-block text-[#FDF9F1]"
     >
       {text}
     </motion.h3>

@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { useState } from 'react';
-import { Menu, X, Home, BookOpen, Settings, Bell, MessageCircle, User, BarChart3, AlertTriangle } from 'lucide-react';
+import { Menu, X, Home, BookOpen, Settings, Bell, MessageCircle, User, BarChart3, Megaphone } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 export default function Navigation() {
@@ -15,7 +15,7 @@ export default function Navigation() {
     { label: 'Community', icon: MessageCircle, href: '/community' },
     { label: 'Profile', icon: User, href: '/profile' },
     { label: 'Polls', icon: BarChart3, href: '/polls' },
-    { label: 'SOS', icon: AlertTriangle, href: '/sos' },
+    { label: 'Complaints', icon: Megaphone, href: '/complaints' },
   ];
 
   return (
@@ -24,7 +24,7 @@ export default function Navigation() {
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
           <Link href="/" className="flex items-center gap-3 font-bold text-xl text-slate-900 dark:text-white">
-            <div className="w-8 h-8 bg-gradient-to-br from-blue-600 to-indigo-600 rounded-lg flex items-center justify-center text-white">
+            <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center text-white">
               📚
             </div>
             Student App
