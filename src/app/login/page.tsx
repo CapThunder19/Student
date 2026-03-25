@@ -1,25 +1,34 @@
 'use client';
 
-import { useState, FormEvent } from 'react';
+import { useState, FormEvent, useEffect } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { Mail, Lock, Eye, EyeOff, AlertCircle } from 'lucide-react';
 
 export default function LoginPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({ email: '', password: '' });
+
+  // Clean up any legacy NextAuth error query parameters like ?error=Configuration
+  useEffect(() => {
+    const errorParam = searchParams.get('error');
+    if (errorParam) {
+      router.replace('/login');
+    }
+  }, [searchParams, router]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
+  const handleSubmit = async (e?: FormEvent<HTMLFormElement>) => {
+    e?.preventDefault();
     setError('');
     setLoading(true);
 
@@ -43,7 +52,8 @@ export default function LoginPage() {
         return;
       }
 
-      window.location.href = '/';
+      // Use Next.js router so navigation works consistently in all environments
+      router.push('/');
     } catch (err) {
       setError('An error occurred. Please try again.');
       console.error(err);
@@ -138,7 +148,12 @@ export default function LoginPage() {
 
               <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}>
                 <button
-                  type="submit" disabled={loading}
+                    type="submit" disabled={loading}
+                    onClick={(e) => {
+                      // Ensure handler runs even if form submit is intercepted
+                      e.preventDefault();
+                      void handleSubmit();
+                    }}
                   className="w-full bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-700 hover:to-blue-700 disabled:from-slate-400 disabled:to-slate-500 text-white font-semibold py-3 rounded-lg transition-all shadow-lg hover:shadow-xl hover:scale-[1.02] active:scale-[0.98]"
                 >
                   {loading ? (
