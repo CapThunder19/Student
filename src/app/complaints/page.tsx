@@ -192,6 +192,7 @@ const getAdminOptions = (department: string) => departmentAdmins[department] || 
 export default function ComplaintsPage() {
   const [form, setForm] = useState<ComplaintFormState>(defaultForm);
   const [complaints, setComplaints] = useState<Complaint[]>([]);
+  const [, setComplaintDrafts] = useState<Record<string, { status: ComplaintStatus; assignedDepartment: string; assignedAdmin: string }>>({});
   const [copiedComplaintId, setCopiedComplaintId] = useState<string | null>(null);
   const [summary, setSummary] = useState<ComplaintSummary>({ total: 0, red: 0, yellow: 0, green: 0 });
   const [activeFilter, setActiveFilter] = useState<'all' | ComplaintSeverity>('all');
