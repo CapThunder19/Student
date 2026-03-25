@@ -1,5 +1,8 @@
 import mongoose, { Document, Schema } from 'mongoose';
-import bcrypt from 'bcryptjs';
+import * as bcryptModule from 'bcryptjs';
+
+// Handle bcryptjs v3 ESM/CJS interop
+const bcrypt = (bcryptModule as any).default || bcryptModule;
 
 export interface IUser extends Document {
   email: string;

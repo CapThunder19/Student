@@ -3,7 +3,6 @@ import CredentialsProvider from 'next-auth/providers/credentials';
 import dbConnect from '@/lib/mongodb';
 import User from '@/models/User';
 import { generateToken } from '@/lib/auth';
-import bcrypt from 'bcryptjs';
 
 export const authOptions: NextAuthOptions = {
   providers: [
@@ -14,33 +13,35 @@ export const authOptions: NextAuthOptions = {
         password: { label: 'Password', type: 'password' },
       },
       async authorize(credentials) {
-        if (!credentials?.email || !credentials?.password) {
-            console.log('Missing credentials');
+        try {
+          if (!credentials?.email || !credentials?.password) {
+            console.log('[NextAuth] Missing credentials');
             return null;
-        }
+          }
 
-        await dbConnect();
-        const user = await User.findOne({ email: credentials.email.toLowerCase() }).select('+password');
-        
-        if (!user) {
-            console.log('User not found:', credentials.email.toLowerCase());
+          await dbConnect();
+          const user = await User.findOne({ email: credentials.email.toLowerCase() }).select('+password');
+
+          if (!user) {
+            console.log('[NextAuth] User not found:', credentials.email.toLowerCase());
             return null;
+          }
+
+          // Use the User model's comparePassword method instead of direct bcrypt
+          const isValid = await user.comparePassword(credentials.password);
+          console.log('[NextAuth] Login attempt for:', user.email, '- valid:', isValid);
+
+          if (!isValid) return null;
+
+          return {
+            id: user._id.toString(),
+            email: user.email,
+            name: user.name,
+          };
+        } catch (error) {
+          console.error('[NextAuth] Authorize error:', error);
+          return null;
         }
-
-        const isValid = await bcrypt.compare(credentials.password, user.password);
-        console.log('--- LOGIN ATTEMPT ---');
-        console.log('Credentials Email:', credentials.email);
-        console.log('Credentials Pass length:', credentials.password.length);
-        console.log('User DB pass:', user.password);
-        console.log('Password valid:', isValid, 'for user:', user.email);
-        
-        if (!isValid) return null;
-
-        return {
-          id: user._id.toString(),
-          email: user.email,
-          name: user.name,
-        };
       },
     }),
   ],
@@ -66,4 +67,4 @@ export const authOptions: NextAuthOptions = {
   },
   session: { strategy: 'jwt' },
   secret: process.env.NEXTAUTH_SECRET || process.env.JWT_SECRET || 'my_super_secret_key_1234567890',
-};
+};

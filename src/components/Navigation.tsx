@@ -1,28 +1,14 @@
 'use client';
 
-import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { useEffect, useState } from 'react';
-import { LogOut, Menu, X, Home, BookOpen, Settings, Bell, MessageCircle, User, BarChart3, AlertTriangle } from 'lucide-react';
+import { useState } from 'react';
+import { Menu, X, Home, BookOpen, Settings, Bell, MessageCircle, User, BarChart3, AlertTriangle } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 export default function Navigation() {
-  const router = useRouter();
   const [isOpen, setIsOpen] = useState(false);
-  const [user, setUser] = useState<any>(null);
 
-  useEffect(() => {
-    const userData = localStorage.getItem('user');
-    if (userData) {
-      setUser(JSON.parse(userData));
-    }
-  }, []);
-
-  const handleLogout = () => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
-    router.push('/login');
-  };
+  // Auth removed temporarily
 
   const navItems = [
     { label: 'Dashboard', icon: Home, href: '/' },
@@ -65,36 +51,6 @@ export default function Navigation() {
               <Bell className="w-5 h-5" />
               <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"></span>
             </button>
-
-            {user ? (
-              <div className="flex items-center gap-4">
-                <span className="text-sm font-medium text-slate-900 dark:text-white hidden sm:inline">
-                  {user.name}
-                </span>
-                <button
-                  onClick={handleLogout}
-                  className="flex items-center gap-2 px-4 py-2 bg-red-100 dark:bg-red-900 text-red-600 dark:text-red-200 rounded-lg hover:bg-red-200 dark:hover:bg-red-800 transition-colors text-sm font-medium"
-                >
-                  <LogOut className="w-4 h-4" />
-                  <span className="hidden sm:inline">Logout</span>
-                </button>
-              </div>
-            ) : (
-              <div className="flex gap-2">
-                <Link
-                  href="/login"
-                  className="px-4 py-2 text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-slate-700 rounded-lg transition-colors text-sm font-medium"
-                >
-                  Login
-                </Link>
-                <Link
-                  href="/signup"
-                  className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium"
-                >
-                  Sign Up
-                </Link>
-              </div>
-            )}
 
             {/* Mobile Menu Button */}
             <button

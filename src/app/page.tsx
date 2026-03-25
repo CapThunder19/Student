@@ -79,12 +79,7 @@ export default function Home() {
         </div>
         {/* Top right actions */}
         <div className="flex gap-4 pointer-events-auto mr-8 md:mr-16 lg:mr-20">
-          <Link href="/login" className="font-bold text-lg bg-white px-6 py-3 rounded-[24px] border-[2px] border-[#1A1A1A] hover:bg-[#FDF9F1] transition-colors shadow-sm hidden sm:block transform rotate-1 hover:rotate-0">
-            Log In
-          </Link>
-          <Link href="/signup" className="font-bold text-lg bg-[#A594F1] px-6 py-3 rounded-[24px] border-[2px] border-[#1A1A1A] hover:bg-[#A7F3D0] transition-colors shadow-sm rotate-2 hover:rotate-0 flex items-center gap-2">
-            Register <ArrowRight className="w-5 h-5" strokeWidth={2} />
-          </Link>
+          {/* Auth links removed temporarily as per request */}
         </div>
       </nav>
 

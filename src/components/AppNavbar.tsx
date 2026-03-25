@@ -1,15 +1,13 @@
 'use client';
 
-import { useRouter, usePathname } from 'next/navigation';
+import { usePathname } from 'next/navigation';
 import Link from 'next/link';
 import { useState, useEffect } from 'react';
 import { LogOut, Home, Shield, BookOpen, Heart, Users, Home as HouseIcon, Wallet, MessageCircle, User } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 export default function AppNavbar() {
-  const router = useRouter();
   const pathname = usePathname();
-  const [user, setUser] = useState<any>(null);
   const [hidden, setHidden] = useState(false);
 
   useEffect(() => {
@@ -29,28 +27,11 @@ export default function AppNavbar() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  useEffect(() => {
-    const userData = localStorage.getItem('user');
-    if (userData) {
-      try {
-        setUser(JSON.parse(userData));
-      } catch (e) {}
-    }
-  }, [pathname]);
-
-  const handleLogout = () => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
-    setUser(null);
-    router.push('/login');
-  };
-
   const modules = [
     { icon: Home, href: '/', label: 'Home', theme: 'bg-white' },
     { icon: Shield, href: '/safecommute', label: 'Safety', theme: 'bg-[#A7F3D0]' },
     { icon: BookOpen, href: '/academics', label: 'Academics', theme: 'bg-[#A594F1]' },
     { icon: Heart, href: '/wellbeing', label: 'Wellbeing', theme: 'bg-[#FDC029]' },
-    { icon: MessageCircle, href: '/wellness-chat', label: 'AI Chat', theme: 'bg-[#EA7A34]' },
     { icon: Users, href: '/community', label: 'Community', theme: 'bg-[#A7F3D0]' },
     { icon: HouseIcon, href: '/housing', label: 'Housing', theme: 'bg-[#A594F1]' },
     { icon: Wallet, href: '/budget', label: 'Budget', theme: 'bg-[#FDC029]' },

@@ -34,7 +34,7 @@ export default function SidebarNavigation() {
   const handleLogout = () => {
     localStorage.removeItem('token');
     localStorage.removeItem('user');
-    router.push('/login');
+    router.push('/');
   };
 
   const navItems = [

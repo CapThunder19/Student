@@ -18,7 +18,13 @@ export default function WellbeingPage() {
   const [breathingPhase, setBreathingPhase] = useState('Ready');
   const [recommendations, setRecommendations] = useState('');
   const [loading, setLoading] = useState(false);
-  const [chatMessages, setChatMessages] = useState<Message[]>([]);
+  const [chatMessages, setChatMessages] = useState<Message[]>([
+    {
+      role: 'ai',
+      content: 'Hello! I\'m your AI wellness buddy. I\'m here to listen and support you. How are you feeling today? You can answer below and I\'ll give you personalized support.',
+      timestamp: new Date(),
+    },
+  ]);
   const [chatInput, setChatInput] = useState('');
   const [chatLoading, setChatLoading] = useState(false);
   const [offlineMode, setOfflineMode] = useState(false);

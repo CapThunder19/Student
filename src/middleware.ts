@@ -1,10 +1,15 @@
-import { withAuth } from 'next-auth/middleware';
+import { NextResponse } from 'next/server';
+// import { withAuth } from 'next-auth/middleware';
 
-export default withAuth({
-  callbacks: {
-    authorized: ({ token }) => !!token,
-  },
-});
+export function middleware() {
+  return NextResponse.next();
+}
+
+// export default withAuth({
+//   callbacks: {
+//     authorized: ({ token }) => !!token,
+//   },
+// });
 
 export const config = {
   matcher: [
@@ -17,6 +22,6 @@ export const config = {
      * - login (login page)
      * - signup (signup page)
      */
-    '/((?!api|_next/static|_next/image|favicon.ico|login|signup|showcase).*)',
+    // '/((?!api|_next/static|_next/image|favicon.ico|login|signup|showcase).*)',
   ],
 };

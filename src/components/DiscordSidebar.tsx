@@ -45,7 +45,7 @@ export default function DiscordSidebar() {
     localStorage.removeItem('user');
     // Clear token cookie
     document.cookie = 'token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC;';
-    router.push('/login');
+    router.push('/');
   };
 
   // Discord-like modules/servers
