@@ -5,12 +5,15 @@ import Link from 'next/link';
 import { useState, useEffect } from 'react';
 import { LogOut, Home, Shield, BookOpen, Heart, Users, Home as HouseIcon, Wallet, MessageCircle, User, LogIn } from 'lucide-react';
 import { motion } from 'framer-motion';
-import { useSession, signOut } from 'next-auth/react';
 
 export default function AppNavbar() {
   const pathname = usePathname();
-  const { data: session, status } = useSession();
   const [hidden, setHidden] = useState(false);
+  const [isClientLoggedIn, setIsClientLoggedIn] = useState(false);
+
+  useEffect(() => {
+    setIsClientLoggedIn(document.cookie.includes('isLoggedIn=true'));
+  }, []);
 
   useEffect(() => {
     let lastScrollY = window.scrollY;
@@ -73,10 +76,14 @@ export default function AppNavbar() {
         <div className="w-px h-6 bg-gray-200 mx-1"></div>
 
         {/* Auth Button */}
-        {status === 'authenticated' ? (
+        {isClientLoggedIn ? (
           <div className="relative group shrink-0">
             <button
-              onClick={() => signOut({ callbackUrl: '/' })}
+              onClick={() => {
+                document.cookie = 'token=; Max-Age=0; path=/;';
+                document.cookie = 'isLoggedIn=; Max-Age=0; path=/;';
+                window.location.href = '/login';
+              }}
               className="w-10 h-10 flex items-center justify-center rounded-[12px] transition-all border-[2px] border-transparent hover:border-[#1A1A1A] hover:bg-gray-50 hover:-translate-y-1"
             >
               <LogOut className="w-4 h-4 text-gray-600 stroke-[2.5]" />
