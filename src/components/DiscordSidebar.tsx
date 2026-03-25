@@ -14,7 +14,7 @@ import {
   Wallet,
   User,
   BarChart3,
-  AlertTriangle,
+  Megaphone,
   Settings,
   MessageCircle,
 } from 'lucide-react';
@@ -50,18 +50,18 @@ export default function DiscordSidebar() {
 
   // Discord-like modules/servers
   const modules = [
-    { icon: Home, href: '/', label: 'Dashboard', color: 'from-blue-500 to-blue-600' },
-    { icon: Shield, href: '/safecommute', label: 'Safety', color: 'from-red-500 to-red-600' },
-    { icon: BookOpen, href: '/academics', label: 'Academics', color: 'from-purple-500 to-purple-600' },
-    { icon: Heart, href: '/wellbeing', label: 'Wellbeing', color: 'from-pink-500 to-pink-600' },
-    { icon: Users, href: '/community', label: 'Community', color: 'from-green-500 to-green-600' },
-    { icon: HouseIcon, href: '/housing', label: 'Housing', color: 'from-orange-500 to-orange-600' },
-    { icon: Wallet, href: '/budget', label: 'Budget', color: 'from-yellow-500 to-yellow-600' },
+    { icon: Home, href: '/', label: 'Dashboard', color: 'bg-blue-600' },
+    { icon: Shield, href: '/safecommute', label: 'Safety', color: 'bg-red-600' },
+    { icon: BookOpen, href: '/academics', label: 'Academics', color: 'bg-purple-600' },
+    { icon: Heart, href: '/wellbeing', label: 'Wellbeing', color: 'bg-pink-600' },
+    { icon: Users, href: '/community', label: 'Community', color: 'bg-green-600' },
+    { icon: HouseIcon, href: '/housing', label: 'Housing', color: 'bg-orange-600' },
+    { icon: Wallet, href: '/budget', label: 'Budget', color: 'bg-yellow-600' },
   ];
 
   const secondaryItems = [
     { icon: User, href: '/profile', label: 'Profile' },
-    { icon: AlertTriangle, href: '/sos', label: 'SOS' },
+    { icon: Megaphone, href: '/complaints', label: 'Complaints' },
     { icon: Settings, href: '#', label: 'Settings' },
   ];
 
@@ -76,7 +76,7 @@ export default function DiscordSidebar() {
         whileHover={{ scale: 1.1 }}
         whileTap={{ scale: 0.95 }}
         onClick={() => router.push('/')}
-        className="w-14 h-14 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full flex items-center justify-center text-white font-bold text-xl shadow-lg hover:rounded-3xl transition-all"
+        className="w-14 h-14 bg-blue-600 rounded-full flex items-center justify-center text-white font-bold text-xl shadow-lg hover:rounded-3xl transition-all"
       >
         📚
       </motion.button>
@@ -95,7 +95,7 @@ export default function DiscordSidebar() {
           <Link
             href={module.href}
             className={`w-14 h-14 rounded-full flex items-center justify-center transition-all group relative ${pathname === module.href
-              ? `bg-gradient-to-br ${module.color} text-white shadow-lg`
+              ? `${module.color} text-white shadow-lg`
               : 'bg-slate-800 text-slate-400 hover:text-white hover:bg-slate-700'
               }`}
             title={module.label}
@@ -156,7 +156,7 @@ export default function DiscordSidebar() {
           <motion.button
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.95 }}
-            className="w-12 h-12 rounded-full bg-gradient-to-br from-purple-600 to-pink-600 text-white font-bold flex items-center justify-center hover:shadow-lg transition-all"
+            className="w-12 h-12 rounded-full bg-purple-600 text-white font-bold flex items-center justify-center hover:shadow-lg transition-all"
             title={user.name}
           >
             {user.name.charAt(0).toUpperCase()}

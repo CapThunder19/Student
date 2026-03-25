@@ -9,7 +9,7 @@ import {
   MessageCircle,
   User,
   BarChart3,
-  AlertTriangle,
+  Megaphone,
   Settings,
   Shield,
   BookOpen,
@@ -47,7 +47,7 @@ export default function SidebarNavigation() {
     { icon: Wallet, href: '/budget', label: 'Budget', display: false },
     { icon: User, href: '/profile', label: 'Profile', display: true },
     { icon: BarChart3, href: '/polls', label: 'Polls', display: true },
-    { icon: AlertTriangle, href: '/sos', label: 'SOS', display: true },
+    { icon: Megaphone, href: '/complaints', label: 'Complaints', display: true },
     { icon: Settings, href: '#', label: 'Settings', display: true },
   ];
 
@@ -59,12 +59,14 @@ export default function SidebarNavigation() {
       initial={{ x: -100, opacity: 0 }}
       animate={{ x: 0, opacity: 1 }}
       transition={{ duration: 0.3 }}
-      className="fixed left-0 top-0 h-screen w-20 bg-gradient-to-b from-slate-900 to-slate-800 dark:from-slate-950 dark:to-slate-900 shadow-2xl flex flex-col items-center py-6 z-50 border-r border-slate-700"
+      style={{ backgroundColor: '#0f172a' }}
+      className="fixed left-0 top-0 h-screen w-20 shadow-2xl flex flex-col items-center py-6 z-50 border-r border-slate-700 dark:border-slate-800"
     >
       {/* Logo */}
       <Link
         href="/"
-        className="w-14 h-14 bg-gradient-to-br from-blue-600 via-indigo-600 to-purple-600 rounded-xl flex items-center justify-center text-white font-bold text-2xl shadow-lg hover:shadow-xl transition-all hover:scale-110 mb-8"
+        style={{ backgroundColor: '#2563eb' }}
+        className="w-14 h-14 rounded-xl flex items-center justify-center text-white font-bold text-2xl shadow-lg hover:shadow-xl transition-all hover:scale-110 mb-8"
       >
         📚
       </Link>
@@ -134,7 +136,8 @@ export default function SidebarNavigation() {
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.95 }}
             title={user.name}
-            className="w-12 h-12 flex items-center justify-center rounded-xl bg-gradient-to-br from-purple-600 to-pink-600 text-white font-bold text-lg shadow-lg hover:shadow-xl transition-all"
+            style={{ backgroundColor: '#9333ea' }}
+            className="w-12 h-12 flex items-center justify-center rounded-xl text-white font-bold text-lg shadow-lg hover:shadow-xl transition-all"
           >
             {user.name.charAt(0).toUpperCase()}
           </motion.button>

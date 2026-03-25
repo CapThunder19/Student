@@ -10,6 +10,7 @@ import {
   Users,
   Home as HouseIcon,
   Wallet,
+  Megaphone,
   ArrowRight,
   TrendingUp,
   AlertCircle,
@@ -89,6 +90,13 @@ export default function Home() {
       description: 'Mood tracking, breathing exercises, and peer support',
       href: '/wellbeing',
       color: 'pink',
+    },
+    {
+      icon: Megaphone,
+      title: 'Complaints',
+      description: 'Submit campus complaints with urgent red, yellow, and green labels',
+      href: '/complaints',
+      color: 'orange',
     },
     {
       icon: Users,
@@ -219,9 +227,9 @@ export default function Home() {
                     <div className="bg-slate-800 border border-slate-700 rounded-xl p-8 h-full hover:border-slate-600 hover:bg-slate-750 transition-all cursor-pointer">
                       {/* Icon */}
                       <div
-                        className={`inline-flex p-3 rounded-lg bg-gradient-to-br ${getColorClass(
+                        className={`inline-flex p-3 rounded-lg bg-linear-to-br ${getColorClass(
                           module.color
-                        )} mb-4 group-hover:scale-110 transition-transform`}
+                        )} mb-4 group-hover:scale-110 transition-all`}
                       >
                         <module.icon className="w-6 h-6 text-white" />
                       </div>
@@ -233,13 +241,38 @@ export default function Home() {
                       <p className="text-slate-400 text-sm leading-relaxed mb-4">{module.description}</p>
 
                       {/* Footer */}
-                      <div className="flex items-center text-blue-400 text-sm font-semibold opacity-0 group-hover:opacity-100 transition-opacity translate-x-0 group-hover:translate-x-1 transform transition-transform">
+                      <div className="flex items-center text-blue-400 text-sm font-semibold opacity-0 group-hover:opacity-100 transition-all translate-x-0 group-hover:translate-x-1">
                         Explore <ArrowRight className="w-4 h-4 ml-2" />
                       </div>
                     </div>
                   </Link>
                 </motion.div>
               ))}
+            </div>
+          </motion.section>
+
+          {/* Complaints Section */}
+          <motion.section
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.3, duration: 0.5 }}
+            className="mb-12"
+          >
+            <h2 className="text-xl font-bold text-white mb-6">Complaints</h2>
+            <div className="bg-linear-to-r from-amber-950 via-slate-800 to-red-950 border border-slate-700 rounded-xl p-8">
+              <div className="flex items-start gap-4">
+                <Megaphone className="w-6 h-6 text-amber-400 shrink-0 mt-1" />
+                <div>
+                  <h3 className="text-lg font-bold text-white mb-2">Raise and track complaints</h3>
+                  <p className="text-slate-300 leading-relaxed">
+                    Use red for very urgent issues, yellow for medium urgency, and green for light problems.
+                    The complaints page is now visible in the dashboard and top navigation.
+                  </p>
+                  <Link href="/complaints" className="inline-flex mt-4 items-center gap-2 text-amber-300 font-semibold hover:text-amber-200 transition-colors">
+                    Open complaints center <ArrowRight className="w-4 h-4" />
+                  </Link>
+                </div>
+              </div>
             </div>
           </motion.section>
 
@@ -251,9 +284,9 @@ export default function Home() {
             className="mb-12"
           >
             <h2 className="text-xl font-bold text-white mb-6">Announcements</h2>
-            <div className="bg-gradient-to-r from-blue-950 via-slate-800 to-purple-950 border border-slate-700 rounded-xl p-8">
+            <div className="bg-linear-to-r from-blue-950 via-slate-800 to-purple-950 border border-slate-700 rounded-xl p-8">
               <div className="flex items-start gap-4">
-                <AlertCircle className="w-6 h-6 text-blue-400 flex-shrink-0 mt-1" />
+                <AlertCircle className="w-6 h-6 text-blue-400 shrink-0 mt-1" />
                 <div>
                   <h3 className="text-lg font-bold text-white mb-2">New Features Coming Soon</h3>
                   <p className="text-slate-300 leading-relaxed">
