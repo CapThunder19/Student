@@ -3,6 +3,7 @@
 import { motion, useScroll, useTransform, useSpring } from 'framer-motion';
 import Link from 'next/link';
 import { useRef } from 'react';
+import { useSession } from 'next-auth/react';
 import {
   Shield,
   BookOpen,
@@ -12,6 +13,7 @@ import {
   Wallet,
   ArrowRight,
   Search,
+  User,
 } from 'lucide-react';
 
 const THIN_SHADOW = "shadow-sm hover:shadow-md transition-all duration-300";
@@ -69,17 +71,38 @@ const modules = [
 ];
 
 export default function Home() {
+  const { data: session, status } = useSession();
+
   return (
     <div className="relative w-full text-[#1A1A1A] font-sans selection:bg-[#EA7A34] selection:text-[#1A1A1A] bg-[#FDF9F1]">
       {/* Navbar - Sticky corner items */}
       <nav className="fixed top-0 w-full p-4 sm:p-8 flex justify-between items-start z-[100] pointer-events-none">
         {/* Logo Box */}
-        <div className="text-2xl sm:text-3xl font-black tracking-tighter pointer-events-auto bg-white px-6 py-3 rounded-[24px] border-[2px] border-[#1A1A1A] shadow-sm transform -rotate-2 hover:rotate-0 transition-transform">
+        <div className="text-2xl sm:text-3xl font-black tracking-tighter pointer-events-auto bg-[#FDF9F1] px-6 py-3 rounded-[24px] border-[2px] border-[#1A1A1A] transform -rotate-2 hover:rotate-0 transition-transform">
           STUDENT<span className="text-[#EA7A34]">.APP</span>
         </div>
         {/* Top right actions */}
-        <div className="flex gap-4 pointer-events-auto mr-8 md:mr-16 lg:mr-20">
-          {/* Auth links removed temporarily as per request */}
+        <div className="flex gap-3 sm:gap-4 pointer-events-auto mr-4 md:mr-8 lg:mr-10 items-center">
+          {status !== 'loading' && (
+            session ? (
+              <Link href="/profile" className="flex items-center gap-2 bg-[#FDF9F1] text-[#1A1A1A] px-6 py-3 rounded-full font-bold text-base sm:text-lg whitespace-nowrap border-[2px] border-[#1A1A1A] hover:bg-black/5 transition-all">
+                <div className="w-8 h-8 rounded-full bg-[#A594F1] border-[2px] border-[#1A1A1A] flex items-center justify-center -ml-2 shrink-0 overflow-hidden">
+                  <User size={18} strokeWidth={2.5} />
+                </div>
+                <span>{session.user?.name || 'Profile'}</span>
+              </Link>
+            ) : (
+              <>
+                <Link href="/login" className="bg-[#FDF9F1] text-[#1A1A1A] px-8 py-3 rounded-full font-bold text-base sm:text-lg whitespace-nowrap border-[2px] border-[#1A1A1A] hover:bg-black/5 transition-all hidden sm:block">
+                  Log In
+                </Link>
+                <Link href="/signup" className="flex items-center gap-1.5 bg-[#A594F1] text-[#1A1A1A] px-8 py-3 rounded-full font-bold text-base sm:text-lg whitespace-nowrap border-[2px] border-[#1A1A1A] transform rotate-[3deg] hover:rotate-0 hover:bg-[#9784ed] transition-all group">
+                  Register
+                  <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" strokeWidth={2.5} />
+                </Link>
+              </>
+            )
+          )}
         </div>
       </nav>
 
