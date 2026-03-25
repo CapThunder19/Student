@@ -3,11 +3,13 @@
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
 import { useState, useEffect } from 'react';
-import { LogOut, Home, Shield, BookOpen, Heart, Users, Home as HouseIcon, Wallet, MessageCircle, User } from 'lucide-react';
+import { LogOut, Home, Shield, BookOpen, Heart, Users, Home as HouseIcon, Wallet, MessageCircle, User, LogIn } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { useSession, signOut } from 'next-auth/react';
 
 export default function AppNavbar() {
   const pathname = usePathname();
+  const { data: session, status } = useSession();
   const [hidden, setHidden] = useState(false);
 
   useEffect(() => {
@@ -66,6 +68,36 @@ export default function AppNavbar() {
              </div>
            );
         })}
+
+        {/* Separator */}
+        <div className="w-px h-6 bg-gray-200 mx-1"></div>
+
+        {/* Auth Button */}
+        {status === 'authenticated' ? (
+          <div className="relative group shrink-0">
+            <button
+              onClick={() => signOut({ callbackUrl: '/' })}
+              className="w-10 h-10 flex items-center justify-center rounded-[12px] transition-all border-[2px] border-transparent hover:border-[#1A1A1A] hover:bg-gray-50 hover:-translate-y-1"
+            >
+              <LogOut className="w-4 h-4 text-gray-600 stroke-[2.5]" />
+            </button>
+            <div className="absolute top-[50px] left-1/2 -translate-x-1/2 bg-[#1A1A1A] text-[#FDF9F1] text-[11px] font-black px-3 py-1.5 rounded-[8px] border-[2px] border-[#1A1A1A] opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none z-50">
+              Log out
+            </div>
+          </div>
+        ) : (
+          <div className="relative group shrink-0">
+            <Link
+              href="/login"
+              className={`w-10 h-10 flex items-center justify-center rounded-[12px] transition-all border-[2px] ${pathname === '/login' ? 'border-[#1A1A1A] bg-[#A594F1] shadow-sm translate-y-[1px]' : 'border-transparent hover:border-[#1A1A1A] hover:bg-[#A594F1] hover:-translate-y-1'}`}
+            >
+              <LogIn className={`w-4 h-4 ${pathname === '/login' ? 'text-[#1A1A1A] stroke-[2.5]' : 'text-gray-600 stroke-[2.5] group-hover:text-[#1A1A1A]'}`} />
+            </Link>
+            <div className="absolute top-[50px] left-1/2 -translate-x-1/2 bg-[#1A1A1A] text-[#FDF9F1] text-[11px] font-black px-3 py-1.5 rounded-[8px] border-[2px] border-[#1A1A1A] opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none z-50">
+              Log in
+            </div>
+          </div>
+        )}
 
       </div>
 
