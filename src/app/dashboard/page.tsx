@@ -11,6 +11,7 @@ import {
   Home as HouseIcon,
   Wallet,
   Megaphone,
+  AlertTriangle,
   ArrowRight,
   TrendingUp,
   AlertCircle,
@@ -70,6 +71,13 @@ export default function Home() {
   ];
 
   const modules = [
+    {
+      icon: AlertTriangle,
+      title: 'SOS Emergency',
+      description: 'Instant emergency alerts, quick dial, and emergency contacts',
+      href: '/sos',
+      color: 'red',
+    },
     {
       icon: Shield,
       title: 'Safe Commute',

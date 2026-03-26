@@ -3,7 +3,7 @@
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
 import { useState, useEffect } from 'react';
-import { Home, Shield, BookOpen, Heart, Users, Home as HouseIcon, Wallet, MessageCircle, User, Megaphone } from 'lucide-react';
+import { Home, Shield, BookOpen, Heart, Users, Home as HouseIcon, Wallet, MessageCircle, User, Megaphone, AlertTriangle } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 export default function AppNavbar() {
@@ -29,6 +29,7 @@ export default function AppNavbar() {
 
   const modules = [
     { icon: Home, href: '/', label: 'Home', theme: 'bg-white' },
+    { icon: AlertTriangle, href: '/sos', label: 'SOS', theme: 'bg-red-200' },
     { icon: Shield, href: '/safecommute', label: 'Safety', theme: 'bg-[#A7F3D0]' },
     { icon: BookOpen, href: '/academics', label: 'Academics', theme: 'bg-[#A594F1]' },
     { icon: Heart, href: '/wellbeing', label: 'Wellbeing', theme: 'bg-[#FDC029]' },

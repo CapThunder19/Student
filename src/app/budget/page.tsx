@@ -1,8 +1,8 @@
 'use client';
 
 import { motion, AnimatePresence } from 'framer-motion';
-import { useState, useEffect } from 'react';
-import { Wallet, TrendingUp, Plus, Eye, EyeOff, Users, ArrowUpRight, ArrowDownRight, Receipt, X, Calendar, Edit2, Check, Loader } from 'lucide-react';
+import { useState, useEffect, useRef, useCallback } from 'react';
+import { Wallet, TrendingUp, Plus, Eye, EyeOff, Users, ArrowUpRight, ArrowDownRight, Receipt, X, Calendar, Edit2, Check, Loader, Bell, BellOff } from 'lucide-react';
 
 interface Transaction {
   _id: string;
@@ -24,10 +24,23 @@ interface SharedExpense {
   date: string;
 }
 
+function sendBudgetNotification(title: string, body: string) {
+  if (typeof window === 'undefined') return;
+  if (!('Notification' in window)) return;
+  if (Notification.permission === 'granted') {
+    new Notification(title, { body, icon: '/favicon.ico' });
+  }
+}
+
+const CATEGORY_LIMITS: Record<string, number> = {
+  Food: 10000, Transport: 3000, Study: 5000, Entertainment: 5000, Shopping: 8000, Emergency: 10000
+};
+
 export default function BudgetPage() {
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<'personal' | 'shared'>('personal');
   const [hideBalance, setHideBalance] = useState(false);
+  const [notificationsEnabled, setNotificationsEnabled] = useState(false);
   
   const [showAddExpense, setShowAddExpense] = useState(false); // Transaction Modal
   const [expenseDesc, setExpenseDesc] = useState('');
@@ -48,6 +61,21 @@ export default function BudgetPage() {
 
   const [isEditingBudget, setIsEditingBudget] = useState(false);
   const [tempBudget, setTempBudget] = useState(0);
+
+  // Track which notifications have already been sent this session
+  const notifiedRef = useRef<Set<string>>(new Set());
+
+  const requestNotificationPermission = useCallback(async () => {
+    if (typeof window === 'undefined' || !('Notification' in window)) return;
+    const permission = await Notification.requestPermission();
+    setNotificationsEnabled(permission === 'granted');
+  }, []);
+
+  useEffect(() => {
+    if (typeof window !== 'undefined' && 'Notification' in window) {
+      setNotificationsEnabled(Notification.permission === 'granted');
+    }
+  }, []);
 
   const fetchBudget = async () => {
     try {
@@ -84,6 +112,45 @@ export default function BudgetPage() {
 
     fetchBudget();
   }, []);
+
+  // Budget notifications effect
+  useEffect(() => {
+    if (!notificationsEnabled || loading || totalBudget === 0) return;
+
+    const spent = transactions.filter(t => t.type === 'expense').reduce((acc, t) => acc + t.amount, 0);
+    const remaining = totalBudget - spent;
+    const usedPct = (spent / totalBudget) * 100;
+
+    // Notify when budget usage crosses 80%
+    if (usedPct >= 80 && !notifiedRef.current.has('budget-80')) {
+      notifiedRef.current.add('budget-80');
+      sendBudgetNotification(
+        '⚠️ Budget Alert',
+        `You have used ${Math.round(usedPct)}% of your monthly budget. Only ₹${remaining.toLocaleString()} remaining.`
+      );
+    }
+
+    // Notify when budget is critically low (< 15%)
+    if (remaining < totalBudget * 0.15 && !notifiedRef.current.has('budget-critical')) {
+      notifiedRef.current.add('budget-critical');
+      sendBudgetNotification(
+        '🚨 Critical Budget Warning',
+        `You are running very low on budget! Only ₹${remaining.toLocaleString()} left for ${daysLeft} days.`
+      );
+    }
+
+    // Notify when a category exceeds its limit
+    Object.entries(CATEGORY_LIMITS).forEach(([cat, limit]) => {
+      const catSpent = transactions.filter(t => t.category === cat && t.type === 'expense').reduce((a, b) => a + b.amount, 0);
+      if (catSpent > limit && !notifiedRef.current.has(`cat-${cat}`)) {
+        notifiedRef.current.add(`cat-${cat}`);
+        sendBudgetNotification(
+          `📊 ${cat} Limit Exceeded`,
+          `You've spent ₹${catSpent.toLocaleString()} on ${cat}, exceeding your ₹${limit.toLocaleString()} limit.`
+        );
+      }
+    });
+  }, [transactions, totalBudget, notificationsEnabled, loading, daysLeft]);
 
   const handleSaveBudget = async () => {
     try {
@@ -142,22 +209,19 @@ export default function BudgetPage() {
   const remaining = totalBudget - spent;
   
   // Dynamically calculate Categories breakdown
-  const categoryLimits: Record<string, number> = {
-    Food: 10000, Transport: 3000, Study: 5000, Entertainment: 5000, Shopping: 8000, Emergency: 10000
-  };
   const categoryColors: Record<string, string> = {
     Food: 'bg-red-600', Transport: 'bg-cyan-600', Study: 'bg-blue-600', Entertainment: 'bg-green-600', Shopping: 'bg-yellow-600', Emergency: 'bg-purple-600'
   };
 
-  const categorySpending = Array.from(new Set([...transactions.map(t => t.category), ...Object.keys(categoryLimits)])).map(cat => {
+  const categorySpending = Array.from(new Set([...transactions.map(t => t.category), ...Object.keys(CATEGORY_LIMITS)])).map(cat => {
     const spentOnCat = transactions.filter(t => t.category === cat && t.type === 'expense').reduce((a, b) => a + b.amount, 0);
     return {
       name: cat,
       spent: spentOnCat,
-      limit: categoryLimits[cat] || 5000,
+      limit: CATEGORY_LIMITS[cat] || 5000,
       color: categoryColors[cat] || 'bg-slate-600',
     };
-  }).filter(c => c.spent > 0 || Object.keys(categoryLimits).includes(c.name));
+  }).filter(c => c.spent > 0 || Object.keys(CATEGORY_LIMITS).includes(c.name));
 
   // Split calculations
   const totalOwedToYou = sharedExpenses.filter(e => e.impactAmount > 0).reduce((a, b) => a + b.impactAmount, 0);
@@ -199,19 +263,32 @@ export default function BudgetPage() {
             </div>
           </div>
           
-          <div className="flex bg-slate-800 rounded-lg p-1">
-            <button 
-              onClick={() => setActiveTab('personal')}
-              className={`px-4 py-2 rounded-md font-medium text-sm transition-all ${activeTab === 'personal' ? 'bg-blue-600 text-white shadow-md' : 'text-slate-400 hover:text-white hover:bg-slate-700'}`}
+          <div className="flex items-center gap-3">
+            {/* Notification toggle */}
+            <button
+              onClick={notificationsEnabled ? undefined : requestNotificationPermission}
+              disabled={notificationsEnabled}
+              title={notificationsEnabled ? 'Budget alerts enabled — to disable, update your browser notification settings' : 'Enable budget notifications'}
+              className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium border transition-all ${notificationsEnabled ? 'border-yellow-500 bg-yellow-500 bg-opacity-10 text-yellow-400 cursor-default' : 'border-slate-700 bg-slate-800 text-slate-400 hover:text-white hover:border-slate-600 cursor-pointer'}`}
             >
-              Personal Budget
+              {notificationsEnabled ? <Bell className="w-4 h-4" /> : <BellOff className="w-4 h-4" />}
+              <span className="hidden sm:inline">{notificationsEnabled ? 'Alerts On' : 'Enable Alerts'}</span>
             </button>
-            <button 
-              onClick={() => setActiveTab('shared')}
-              className={`px-4 py-2 rounded-md font-medium text-sm transition-all ${activeTab === 'shared' ? 'bg-purple-600 text-white shadow-md' : 'text-slate-400 hover:text-white hover:bg-slate-700'}`}
-            >
-              Split Expenses
-            </button>
+
+            <div className="flex bg-slate-800 rounded-lg p-1">
+              <button 
+                onClick={() => setActiveTab('personal')}
+                className={`px-4 py-2 rounded-md font-medium text-sm transition-all ${activeTab === 'personal' ? 'bg-blue-600 text-white shadow-md' : 'text-slate-400 hover:text-white hover:bg-slate-700'}`}
+              >
+                Personal Budget
+              </button>
+              <button 
+                onClick={() => setActiveTab('shared')}
+                className={`px-4 py-2 rounded-md font-medium text-sm transition-all ${activeTab === 'shared' ? 'bg-purple-600 text-white shadow-md' : 'text-slate-400 hover:text-white hover:bg-slate-700'}`}
+              >
+                Split Expenses
+              </button>
+            </div>
           </div>
         </div>
       </header>
@@ -536,7 +613,7 @@ export default function BudgetPage() {
                   <div>
                     <label className="block text-slate-400 text-sm font-medium mb-2">Category</label>
                     <select value={expenseCategory} onChange={e => setExpenseCategory(e.target.value)} className="w-full bg-slate-900 border border-slate-700 text-white rounded-lg px-4 py-3 outline-none focus:border-blue-500 transition-colors">
-                      {Object.keys(categoryLimits).map(cat => (
+                      {Object.keys(CATEGORY_LIMITS).map(cat => (
                         <option key={cat} value={cat}>{cat}</option>
                       ))}
                     </select>
