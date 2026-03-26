@@ -39,3 +39,11 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+.idea/
+.vscode/
+Users/
+.next/
+android-app/.next/
+android-app/src/.next/
+android-app/Users/

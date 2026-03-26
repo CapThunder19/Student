@@ -1,8 +1,12 @@
 import type { NextConfig } from "next";
+import path from "path";
 
 const nextConfig: NextConfig = {
   /* config options here */
-  reactCompiler: true,
+  distDir: path.join(process.cwd(), "src/.next"),
+  turbopack: {
+    root: path.join(process.cwd(), "src"),
+  },
 };
 
 export default nextConfig;
