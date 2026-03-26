@@ -5,6 +5,10 @@ import { useState, useEffect, useRef } from 'react';
 import { Heart, Smile, Zap, Users, Sparkles, Loader, Send, Droplets, Coffee, Bell, Clock } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 
+const PAGE_BG = "bg-[#FDF9F1] text-[#1A1A1A]";
+const CARD = "bg-white border-2 border-[#1A1A1A] rounded-3xl shadow-[4px_4px_0_0_#1A1A1A]";
+const SUBTLE_CARD = "bg-[#F8F1E7] border-2 border-[#1A1A1A] rounded-3xl";
+
 interface Message {
   role: 'user' | 'ai';
   content: string;
@@ -167,25 +171,57 @@ export default function WellbeingPage() {
   };
 
   return (
-    <div className="flex flex-col min-h-screen bg-slate-900">
-      <header className="sticky top-0 z-40 bg-slate-950 border-b border-slate-800 px-8 py-6">
-        <div className="flex items-center gap-3">
-          <div className="p-3 rounded-lg bg-pink-600 bg-opacity-20">
-            <Heart className="w-6 h-6 text-pink-400" />
+    <div className={`${PAGE_BG} flex flex-col min-h-screen`}>
+      <header className="pt-28 pb-10 px-6 sm:px-10 bg-[#FDF1DC] border-b-2 border-[#1A1A1A] rounded-b-[2.5rem] shadow-[0_10px_0_0_#1A1A1A]">
+        <div className="max-w-6xl mx-auto flex flex-col md:flex-row md:items-center md:justify-between gap-8">
+          <div className="space-y-4">
+            <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-white border-2 border-[#1A1A1A] rounded-full shadow-[3px_3px_0_0_#1A1A1A] text-sm font-semibold">
+              <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-[#FDE6F2] border-2 border-[#1A1A1A]">
+                <Heart className="w-4 h-4 text-[#E11D48]" />
+              </span>
+              <span className="tracking-wide uppercase text-xs">Neural Core · Check-In</span>
+            </div>
+            <div>
+              <h1 className="text-4xl sm:text-5xl font-extrabold tracking-tight leading-tight">
+                Wellbeing
+              </h1>
+              <p className="mt-3 max-w-xl text-sm sm:text-base text-[#7C6A58]">
+                Track your mood, sync your breathing, and lean on peers when things feel heavy. All in one soft dashboard.
+              </p>
+            </div>
           </div>
-          <div>
-            <h1 className="text-3xl font-bold text-white">Wellbeing</h1>
-            <p className="text-slate-400 text-sm">Mental health & peer support</p>
+          <div className="md:self-end w-full md:w-auto">
+            <div className={`${CARD} px-5 py-4 bg-[#FFF7E8] flex flex-col gap-3`}>
+              <div className="flex items-center justify-between text-xs font-semibold text-[#7C6A58]">
+                <span className="flex items-center gap-2">
+                  <Smile className="w-4 h-4 text-[#22C55E]" />
+                  Mood today
+                </span>
+                <span className="px-2 py-0.5 rounded-full border border-[#1A1A1A] bg-white text-[11px]">
+                  {moodLabels[mood]}
+                </span>
+              </div>
+              <div className="flex items-center justify-between text-xs font-semibold text-[#7C6A58]">
+                <span className="flex items-center gap-2">
+                  <Zap className="w-4 h-4 text-[#F97316]" />
+                  Stress load
+                </span>
+                <span className="px-2 py-0.5 rounded-full border border-[#1A1A1A] bg-white text-[11px]">
+                  {stress}/10
+                </span>
+              </div>
+            </div>
           </div>
         </div>
       </header>
 
       <main className="flex-1 overflow-auto">
-        <div className="max-w-6xl mx-auto px-8 py-8">
+        <div className="max-w-6xl mx-auto px-6 sm:px-10 py-10">
           {/* Mood Tracker */}
           <motion.section initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="mb-12">
-            <h2 className="text-2xl font-bold text-white mb-6">How are you feeling today?</h2>
-            <div className="bg-slate-800 border border-slate-700 rounded-xl p-8">
+            <h2 className="text-2xl font-bold mb-4">Check-in</h2>
+            <p className="text-sm text-[#7C6A58] mb-4">Tap how you feel right now – we&apos;ll tune the dashboard around you.</p>
+            <div className={`${CARD} p-8`}>
               <div className="flex justify-between items-center mb-6">
                 {moodEmojis.map((emoji, idx) => (
                   <motion.button key={idx} whileHover={{ scale: 1.2 }} whileTap={{ scale: 0.95 }} onClick={() => setMood(idx)} className={`text-5xl transition-all ${mood === idx ? 'scale-125' : 'opacity-50'}`}>
@@ -193,24 +229,27 @@ export default function WellbeingPage() {
                   </motion.button>
                 ))}
               </div>
-              <input type="range" min="0" max="4" value={mood} onChange={e => setMood(Number(e.target.value))} className="w-full mb-3" />
-              <p className="text-slate-400 text-center text-sm">{moodLabels[mood]}</p>
+              <input type="range" min="0" max="4" value={mood} onChange={e => setMood(Number(e.target.value))} className="w-full mb-3 accent-[#F97316]" />
+              <p className="text-center text-sm font-medium text-[#7C6A58]">{moodLabels[mood]}</p>
             </div>
           </motion.section>
 
           {/* Breathing Exercise */}
           <motion.section initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="mb-12">
-            <h2 className="text-2xl font-bold text-white mb-6">Quick Breathing Exercise</h2>
-            <div className="bg-slate-800 border border-slate-700 rounded-xl p-8 text-center">
+            <h2 className="text-2xl font-bold mb-6">Ground · Breathing Loop</h2>
+            <div className={`${CARD} p-8 text-center bg-[#FFF7E8]`}>
               <motion.div 
                 animate={{ scale: breathing ? [1, 1.5, 1.5, 1] : 1 }} 
                 transition={{ duration: 10, times: [0, 0.4, 0.6, 1], ease: "easeInOut", repeat: breathing ? Infinity : 0 }} 
-                className="w-48 h-48 bg-linear-to-br from-blue-500 to-blue-600 rounded-full mx-auto mb-6 flex items-center justify-center font-bold text-white text-2xl shadow-lg shadow-blue-500/50"
+                className="w-48 h-48 bg-linear-to-br from-[#4F46E5] to-[#22C55E] rounded-full mx-auto mb-6 flex items-center justify-center font-bold text-white text-2xl shadow-lg shadow-[#4F46E5]/40"
               >
                 {breathingPhase}
               </motion.div>
-              <p className="text-slate-400 text-sm mb-4">Follow the circle to relax your mind and body</p>
-              <button onClick={() => setBreathing(!breathing)} className="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition-colors">
+              <p className="text-[#7C6A58] text-sm mb-4">Follow the circle – breathe in, hold, and soften your shoulders as you exhale.</p>
+              <button
+                onClick={() => setBreathing(!breathing)}
+                className="px-6 py-2 rounded-full border-2 border-[#1A1A1A] bg-[#F97316] text-[#1A1A1A] font-semibold shadow-[3px_3px_0_0_#1A1A1A] hover:-translate-y-0.5 transition-transform"
+              >
                 {breathing ? 'Stop' : 'Start'} Exercise
               </button>
             </div>
@@ -223,18 +262,18 @@ export default function WellbeingPage() {
             transition={{ delay: 0.12 }}
             className="mb-12"
           >
-            <h2 className="text-2xl font-bold text-white mb-4 flex items-center gap-2">
-              <Sparkles className="w-6 h-6 text-indigo-400" /> Soothing Sound
+            <h2 className="text-2xl font-bold mb-4 flex items-center gap-2">
+              <Sparkles className="w-6 h-6 text-indigo-500" /> Soothing Sound
             </h2>
-            <div className="bg-slate-800 border border-slate-700 rounded-xl p-6 flex flex-col gap-3">
-              <p className="text-slate-400 text-sm">
+            <div className={`${CARD} p-6 flex flex-col gap-3`}>
+              <p className="text-[#7C6A58] text-sm">
                 Plug in your earphones, close your eyes, and let this gentle ambient track help you unwind.
               </p>
               <audio controls className="w-full mt-2 rounded-lg">
                 <source src="/audio/soothing-sound.mp3" type="audio/mpeg" />
                 Your browser does not support the audio element.
               </audio>
-              <p className="text-xs text-slate-500 mt-1">
+              <p className="text-xs text-[#9A8774] mt-1">
                 If you don&apos;t hear anything, make sure the file is available at
                 <span className="font-mono"> /public/audio/soothing-sound.mp3</span> in the project.
               </p>
@@ -243,40 +282,65 @@ export default function WellbeingPage() {
 
           {/* Wellness Reminders */}
           <motion.section initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }} className="mb-12">
-            <h2 className="text-2xl font-bold text-white mb-6 flex items-center gap-2">
-              <Bell className="w-6 h-6 text-yellow-500" /> Wellness Reminders
+            <h2 className="text-2xl font-bold mb-2 flex items-center gap-2">
+              <Bell className="w-6 h-6 text-yellow-500" /> Flow · Tiny nudges
             </h2>
+            <p className="text-sm text-[#7C6A58] mb-6">Hydrate, move, and blink away from the screen – your body keeps score.</p>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {/* Water Reminder */}
-              <div className="bg-slate-800 border border-slate-700 rounded-xl p-6 flex flex-col items-center text-center">
-                <div className="p-4 bg-cyan-900 bg-opacity-30 rounded-full mb-4">
-                  <Droplets className="w-8 h-8 text-cyan-400" />
+              <div className={`${CARD} p-6 flex flex-col items-center text-center bg-[#E0F9FF]`}>
+                <div className="p-4 bg-white border-2 border-[#1A1A1A] rounded-full mb-4 shadow-[3px_3px_0_0_#1A1A1A]">
+                  <Droplets className="w-8 h-8 text-cyan-500" />
                 </div>
-                <h3 className="text-lg font-bold text-white mb-2">Water Reminder</h3>
-                <p className="text-slate-400 text-sm mb-4">Stay hydrated to keep your focus sharp</p>
+                <h3 className="text-lg font-bold mb-1">Water Reminder</h3>
+                <p className="text-[#7C6A58] text-sm mb-4">Stay hydrated to keep your focus sharp</p>
                 <div className="flex items-center gap-3 w-full max-w-50 mb-4">
-                  <Clock className="w-5 h-5 text-slate-500 hidden sm:block" />
-                  <input type="number" min="15" max="180" step="15" value={waterInterval} onChange={(e) => setWaterInterval(Number(e.target.value))} className="w-full bg-slate-900 border border-slate-700 text-white px-3 py-2 rounded-lg outline-none" disabled={waterActive} />
-                  <span className="text-slate-400 text-sm">mins</span>
+                  <Clock className="w-5 h-5 text-[#9A8774] hidden sm:block" />
+                  <input
+                    type="number"
+                    min="15"
+                    max="180"
+                    step="15"
+                    value={waterInterval}
+                    onChange={(e) => setWaterInterval(Number(e.target.value))}
+                    className="w-full bg-white border-2 border-[#1A1A1A] text-[#1A1A1A] px-3 py-2 rounded-2xl outline-none shadow-[2px_2px_0_0_#1A1A1A]"
+                    disabled={waterActive}
+                  />
+                  <span className="text-[#7C6A58] text-sm">mins</span>
                 </div>
-                <button onClick={() => setWaterActive(!waterActive)} className={`w-full py-2 font-semibold rounded-lg transition-colors ${waterActive ? 'bg-slate-700 text-slate-300 hover:bg-slate-600' : 'bg-cyan-600 text-white hover:bg-cyan-700'}`}>
+                <button
+                  onClick={() => setWaterActive(!waterActive)}
+                  className={`w-full py-2 font-semibold rounded-full border-2 border-[#1A1A1A] shadow-[3px_3px_0_0_#1A1A1A] transition-transform ${waterActive ? 'bg-white text-[#1A1A1A]' : 'bg-[#22C55E] text-[#1A1A1A]'}`}
+                >
                   {waterActive ? 'Pause Reminder' : 'Start Reminder'}
                 </button>
               </div>
 
               {/* Break Reminder */}
-              <div className="bg-slate-800 border border-slate-700 rounded-xl p-6 flex flex-col items-center text-center">
-                <div className="p-4 bg-orange-900 bg-opacity-30 rounded-full mb-4">
-                  <Coffee className="w-8 h-8 text-orange-400" />
+              <div className={`${CARD} p-6 flex flex-col items-center text-center bg-[#FFEFD8]`}>
+                <div className="p-4 bg-white border-2 border-[#1A1A1A] rounded-full mb-4 shadow-[3px_3px_0_0_#1A1A1A]">
+                  <Coffee className="w-8 h-8 text-orange-500" />
                 </div>
-                <h3 className="text-lg font-bold text-white mb-2">Break Reminder</h3>
-                <p className="text-slate-400 text-sm mb-4">Take regular breaks to avoid burnout</p>
+                <h3 className="text-lg font-bold mb-1">Break Reminder</h3>
+                <p className="text-[#7C6A58] text-sm mb-4">Take regular breaks to avoid burnout</p>
                 <div className="flex items-center gap-3 w-full max-w-50 mb-4">
-                  <Clock className="w-5 h-5 text-slate-500 hidden sm:block" />
-                  <input type="number" min="15" max="180" step="15" value={breakInterval} onChange={(e) => setBreakInterval(Number(e.target.value))} className="w-full bg-slate-900 border border-slate-700 text-white px-3 py-2 rounded-lg outline-none" disabled={breakActive} />
-                  <span className="text-slate-400 text-sm">mins</span>
+                  <Clock className="w-5 h-5 text-[#9A8774] hidden sm:block" />
+                  <input
+                    type="number"
+                    min="15"
+                    max="180"
+                    step="15"
+                    value={breakInterval}
+                    onChange={(e) => setBreakInterval(Number(e.target.value))}
+                    className="w-full bg-white border-2 border-[#1A1A1A] text-[#1A1A1A] px-3 py-2 rounded-2xl outline-none shadow-[2px_2px_0_0_#1A1A1A]"
+                    disabled={breakActive}
+                  />
+                  <span className="text-[#7C6A58] text-sm">mins</span>
                 </div>
-                <button onClick={() => setBreakActive(!breakActive)} className={`w-full py-2 font-semibold rounded-lg transition-colors ${breakActive ? 'bg-slate-700 text-slate-300 hover:bg-slate-600' : 'bg-orange-600 text-white hover:bg-orange-700'}`}>
+                <button
+                  onClick={() => setBreakActive(!breakActive)}
+                  className={`w-full py-2 font-semibold rounded-full border-2 border-[#1A1A1A] shadow-[3px_3px_0_0_#1A1A1A] transition-transform ${breakActive ? 'bg-white text-[#1A1A1A]' : 'bg-[#FDBA74] text-[#1A1A1A]'}`}
+                >
                   {breakActive ? 'Pause Reminder' : 'Start Reminder'}
                 </button>
               </div>
@@ -285,16 +349,16 @@ export default function WellbeingPage() {
 
           {/* Stress Level */}
           <motion.section initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="mb-12">
-            <h2 className="text-2xl font-bold text-white mb-6">Stress Level</h2>
-            <div className="bg-slate-800 border border-slate-700 rounded-xl p-6">
-              <input type="range" min="0" max="10" value={stress} onChange={e => setStress(Number(e.target.value))} className="w-full mb-4" />
+            <h2 className="text-2xl font-bold mb-6">Stress Level</h2>
+            <div className={`${CARD} p-6`}>
+              <input type="range" min="0" max="10" value={stress} onChange={e => setStress(Number(e.target.value))} className="w-full mb-4 accent-[#F97316]" />
               <div className="flex items-center justify-between">
-                <span className="text-slate-400">Current: </span>
+                <span className="text-[#7C6A58] text-sm">Current load</span>
                 <div className="flex items-center gap-2">
-                  <div className="flex-1 bg-slate-700 rounded-full h-2 w-24">
-                    <div className="bg-linear-to-r from-yellow-500 to-red-500 h-2 rounded-full" style={{ width: `${(stress / 10) * 100}%` }} />
+                  <div className="flex-1 bg-[#F1E5D4] rounded-full h-2 w-24 overflow-hidden border border-[#1A1A1A]">
+                    <div className="bg-linear-to-r from-[#FACC15] to-[#EF4444] h-2" style={{ width: `${(stress / 10) * 100}%` }} />
                   </div>
-                  <span className="text-white font-bold">{stress}/10</span>
+                  <span className="text-sm font-semibold text-[#1A1A1A]">{stress}/10</span>
                 </div>
               </div>
             </div>
@@ -302,55 +366,56 @@ export default function WellbeingPage() {
 
           {/* AI Wellness Recommendations */}
           <motion.section initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25 }} className="mb-12">
-            <h2 className="text-2xl font-bold text-white mb-6 flex items-center gap-2">
-              <Sparkles className="w-6 h-6 text-yellow-400" /> AI Wellness Recommendations
+            <h2 className="text-2xl font-bold mb-3 flex items-center gap-2">
+              <Sparkles className="w-6 h-6 text-yellow-500" /> Neural Suggestions
             </h2>
-            <div className="bg-linear-to-r from-slate-800 to-slate-800 border border-purple-700 rounded-xl p-8">
+            <p className="text-sm text-[#7C6A58] mb-4">Tiny, AI-shaped nudges tuned to your current mood and stress.</p>
+            <div className={`${SUBTLE_CARD} p-8 shadow-[4px_4px_0_0_#1A1A1A]`}>
               {loading ? (
-                <div className="flex items-center justify-center gap-2 text-slate-400">
-                  <Loader className="w-5 h-5 animate-spin" />
+                <div className="flex items-center justify-center gap-2 text-[#7C6A58]">
+                  <Loader className="w-5 h-5 animate-spin text-[#F97316]" />
                   Generating personalized recommendations...
                 </div>
               ) : recommendations ? (
-                <div className="space-y-4 text-slate-200 prose prose-invert max-w-none">
+                <div className="space-y-4 text-[#4A3B2C] prose max-w-none">
                   <ReactMarkdown
                     components={{
-                      h1: ({ node, ...props }) => <h1 className="text-white font-bold text-lg mt-4 mb-2" {...props} />,
-                      h2: ({ node, ...props }) => <h2 className="text-white font-bold text-base mt-3 mb-2" {...props} />,
-                      h3: ({ node, ...props }) => <h3 className="text-white font-semibold text-sm mt-2 mb-1" {...props} />,
-                      p: ({ node, ...props }) => <p className="text-slate-300 text-sm leading-relaxed" {...props} />,
-                      strong: ({ node, ...props }) => <strong className="text-white font-semibold" {...props} />,
+                      h1: ({ node, ...props }) => <h1 className="text-[#1A1A1A] font-bold text-lg mt-4 mb-2" {...props} />,
+                      h2: ({ node, ...props }) => <h2 className="text-[#1A1A1A] font-bold text-base mt-3 mb-2" {...props} />,
+                      h3: ({ node, ...props }) => <h3 className="text-[#1A1A1A] font-semibold text-sm mt-2 mb-1" {...props} />,
+                      p: ({ node, ...props }) => <p className="text-[#4A3B2C] text-sm leading-relaxed" {...props} />,
+                      strong: ({ node, ...props }) => <strong className="text-[#1A1A1A] font-semibold" {...props} />,
                       ol: ({ node, ...props }) => <ol className="space-y-3 list-decimal list-inside" {...props} />,
                       ul: ({ node, ...props }) => <ul className="space-y-2 list-disc list-inside" {...props} />,
-                      li: ({ node, ...props }) => <li className="text-slate-300 text-sm" {...props} />,
+                      li: ({ node, ...props }) => <li className="text-[#4A3B2C] text-sm" {...props} />,
                     }}
                   >
                     {recommendations}
                   </ReactMarkdown>
                 </div>
               ) : (
-                <p className="text-slate-400 text-center">Personalizing your recommendations...</p>
+                <p className="text-[#7C6A58] text-center text-sm">Personalizing your recommendations...</p>
               )}
             </div>
           </motion.section>
 
           {/* AI Chat */}
           <motion.section initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.35 }} className="mb-12">
-            <div className="flex items-center justify-between mb-6">
-              <h2 className="text-2xl font-bold text-white flex items-center gap-2">
-                <Sparkles className="w-6 h-6 text-cyan-400" /> Chat with AI
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-2xl font-bold flex items-center gap-2">
+                <Sparkles className="w-6 h-6 text-cyan-500" /> Talk it out
               </h2>
               {offlineMode && (
-                <div className="bg-yellow-900 bg-opacity-30 border border-yellow-700 px-3 py-1 rounded-lg text-yellow-400 text-xs font-semibold">
+                <div className="bg-[#FEF3C7] border-2 border-[#1A1A1A] px-3 py-1 rounded-full text-xs font-semibold text-[#92400E] shadow-[2px_2px_0_0_#1A1A1A]">
                   📡 Offline Mode
                 </div>
               )}
             </div>
-            <div className="bg-slate-800 border border-slate-700 rounded-xl overflow-hidden flex flex-col h-96">
+            <div className={`${CARD} overflow-hidden flex flex-col h-96 bg-[#FFF7E8]`}>
               {/* Messages Area */}
-              <div className="flex-1 overflow-y-auto px-6 py-4 space-y-4 bg-slate-900 bg-opacity-50">
+              <div className="flex-1 overflow-y-auto px-6 py-4 space-y-4">
                 {chatMessages.length === 0 ? (
-                  <div className="flex items-center justify-center h-full text-slate-400 text-sm text-center">
+                  <div className="flex items-center justify-center h-full text-[#7C6A58] text-sm text-center">
                     <p>Start a conversation with your AI wellness mentor. Share what's on your mind!</p>
                   </div>
                 ) : (
@@ -363,9 +428,15 @@ export default function WellbeingPage() {
                         exit={{ opacity: 0, y: -10 }}
                         className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}
                       >
-                        <div className={message.role === 'user' ? 'max-w-xs px-4 py-2 rounded-lg text-sm bg-blue-600 text-white rounded-br-none' : 'max-w-xs px-4 py-2 rounded-lg text-sm bg-slate-700 text-slate-100 rounded-bl-none'}>
-                          <p className="leading-relaxed">{message.content}</p>
-                          <p className="text-xs opacity-70 mt-1">
+                        <div
+                          className={
+                            message.role === 'user'
+                              ? 'max-w-xs px-4 py-2 rounded-2xl text-sm bg-[#DCFCE7] border-2 border-[#16A34A] rounded-br-sm'
+                              : 'max-w-xs px-4 py-2 rounded-2xl text-sm bg-white border-2 border-[#1A1A1A] rounded-bl-sm'
+                          }
+                        >
+                          <p className="leading-relaxed text-[#1A1A1A]">{message.content}</p>
+                          <p className="text-[10px] opacity-70 mt-1 text-[#7C6A58]">
                             {message.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                           </p>
                         </div>
@@ -375,15 +446,15 @@ export default function WellbeingPage() {
                 )}
                 {chatLoading && (
                   <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="flex justify-start">
-                    <div className="bg-slate-700 text-slate-100 rounded-lg rounded-bl-none px-4 py-2 flex items-center gap-2">
-                      <Loader className="w-4 h-4 animate-spin" />
-                      <span className="text-sm">AI is thinking...</span>
+                    <div className="bg-white border-2 border-[#1A1A1A] rounded-2xl rounded-bl-sm px-4 py-2 flex items-center gap-2">
+                      <Loader className="w-4 h-4 animate-spin text-[#F97316]" />
+                      <span className="text-sm text-[#1A1A1A]">AI is thinking...</span>
                     </div>
                   </motion.div>
                 )}
                 <div ref={messagesEndRef} />
               </div>
-              <div className="border-t border-slate-700 bg-slate-800 px-4 py-3 flex gap-2">
+              <div className="border-t-2 border-[#1A1A1A] bg-[#FFEFD8] px-4 py-3 flex gap-2">
                 <input
                   type="text"
                   value={chatInput}
@@ -396,14 +467,14 @@ export default function WellbeingPage() {
                   }}
                   placeholder="Type your thoughts or feelings..."
                   disabled={chatLoading}
-                  className="flex-1 bg-slate-700 text-white rounded-lg px-3 py-2 border border-slate-600 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50 text-sm"
+                  className="flex-1 bg-white text-[#1A1A1A] rounded-2xl px-3 py-2 border-2 border-[#1A1A1A] focus:outline-none focus:ring-0 shadow-[2px_2px_0_0_#1A1A1A] disabled:opacity-50 text-sm"
                 />
                 <motion.button
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                   onClick={handleSendChatMessage}
                   disabled={chatLoading || !chatInput.trim()}
-                  className="bg-blue-600 hover:bg-blue-700 disabled:bg-slate-600 text-white px-4 py-2 rounded-lg font-semibold transition-colors flex items-center gap-2"
+                  className="bg-[#F97316] hover:bg-[#FACC15] disabled:bg-[#F5D0B5] text-[#1A1A1A] px-4 py-2 rounded-full font-semibold transition-colors flex items-center gap-2 border-2 border-[#1A1A1A] shadow-[3px_3px_0_0_#1A1A1A]"
                 >
                   <Send className="w-4 h-4" />
                 </motion.button>
@@ -413,24 +484,35 @@ export default function WellbeingPage() {
 
           {/* Peer Listeners */}
           <motion.section initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} className="mb-12">
-            <h2 className="text-2xl font-bold text-white mb-6">Connect with Peer Listeners</h2>
+            <h2 className="text-2xl font-bold mb-2">Peer Links</h2>
+            <p className="text-sm text-[#7C6A58] mb-6">Student listeners who get it. Reach out when you don&apos;t want to carry it alone.</p>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {peerListeners.map((listener, idx) => (
-                <motion.div key={listener.id} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 + idx * 0.08 }} className="bg-slate-800 border border-slate-700 rounded-xl p-6 hover:border-slate-600 hover:bg-slate-750 transition-all">
+                <motion.div
+                  key={listener.id}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.3 + idx * 0.08 }}
+                  className={`${CARD} p-6 hover:-translate-y-1 transition-transform bg-[#FFFFFF]`}
+                >
                   <div className="flex items-start justify-between mb-3">
                     <div className="flex-1">
-                      <h3 className="text-white font-bold">{listener.name}</h3>
-                      <div className="flex items-center gap-2 text-sm text-slate-400 mt-1">
+                      <h3 className="font-bold text-[#1A1A1A]">{listener.name}</h3>
+                      <div className="flex items-center gap-2 text-sm text-[#7C6A58] mt-1">
                         <span>⭐ {listener.rating}</span>
                         <span>•</span>
                         <span>{listener.sessions} sessions</span>
                       </div>
                     </div>
-                    <span className={`px-2 py-1 rounded text-xs font-bold ${listener.status === 'online' ? 'bg-green-600 bg-opacity-20 text-green-400' : 'text-slate-400'}`}>
+                    <span
+                      className={`px-2 py-1 rounded-full text-[11px] font-bold border-2 border-[#1A1A1A] ${
+                        listener.status === 'online' ? 'bg-[#BBF7D0] text-[#166534]' : 'bg-[#E5E7EB] text-[#4B5563]'
+                      }`}
+                    >
                       {listener.status === 'online' ? '● Online' : '○ Offline'}
                     </span>
                   </div>
-                  <button className="w-full mt-4 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-semibold transition-colors">
+                  <button className="w-full mt-4 px-4 py-2 rounded-full border-2 border-[#1A1A1A] bg-[#F97316] text-[#1A1A1A] font-semibold shadow-[3px_3px_0_0_#1A1A1A] hover:-translate-y-0.5 transition-transform">
                     Connect
                   </button>
                 </motion.div>

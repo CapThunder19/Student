@@ -39,7 +39,6 @@ export default function SidebarNavigation() {
 
   const navItems = [
     { icon: Home, href: '/', label: 'Dashboard', display: true },
-    { icon: Shield, href: '/safecommute', label: 'Safety', display: true },
     { icon: BookOpen, href: '/academics', label: 'Academics', display: true },
     { icon: Heart, href: '/wellbeing', label: 'Wellbeing', display: true },
     { icon: MessageCircle, href: '/community', label: 'Community', display: true },
