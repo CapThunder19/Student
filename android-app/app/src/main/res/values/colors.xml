@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="student_background">#111111</color>
+    <color name="student_surface">#1E1E1E</color>
+    <color name="student_primary">#4D8DFF</color>
+    <color name="student_secondary">#2BB673</color>
+    <color name="student_emergency">#8E2A17</color>
+    <color name="student_budget">#7A4A00</color>
+</resources>

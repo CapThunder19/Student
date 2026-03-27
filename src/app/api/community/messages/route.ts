@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import dbConnect from '@/lib/mongodb';
 import ChatMessageModel from '@/models/ChatMessage';
+import { getAuthContext } from '@/lib/request-auth';
 
 const HISTORY_LIMIT = 100;
 
@@ -111,7 +112,7 @@ export async function PATCH(req: NextRequest) {
   try {
     const body = await req.json();
     const messageId = String(body.messageId || '').trim();
-    const userId = String(body.userId || '').trim();
+    const { userId } = getAuthContext(req);
 
     if (!messageId || !userId) {
       return NextResponse.json({ error: 'Invalid reaction payload' }, { status: 400 });

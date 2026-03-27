@@ -1,0 +1,23 @@
+{
+  "expo": {
+    "name": "Student App",
+    "slug": "student-mobile-app",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "light",
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "android": {
+      "package": "com.student.mobileapp"
+    },
+    "ios": {
+      "bundleIdentifier": "com.student.mobileapp"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "936fe607-d9ae-4865-be46-1f78c2dd70e1"
+      }
+    }
+  }
+}
