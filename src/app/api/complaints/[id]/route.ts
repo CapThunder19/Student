@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import dbConnect from '@/lib/mongodb';
 import ComplaintModel, { ComplaintSeverity, ComplaintStatus } from '@/models/Complaint';
-import { getComplaintNextEscalationAt } from '../route';
+import { getComplaintNextEscalationAt } from '../escalation';
 
 type ComplaintPatchBody = {
   status?: ComplaintStatus;

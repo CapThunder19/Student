@@ -36,9 +36,12 @@
     ".next/dev/types/**/*.ts",
     "**/*.mts",
     "/Users/anandprakashsrivastava/Student/src/.next/types/**/*.ts",
-    "/Users/anandprakashsrivastava/Student/src/.next/dev/types/**/*.ts"
+    "/Users/anandprakashsrivastava/Student/src/.next/dev/types/**/*.ts",
+    "src/.next/types/**/*.ts",
+    "src/.next/dev/types/**/*.ts"
   ],
   "exclude": [
-    "node_modules"
+    "node_modules",
+    "react-native-app"
   ]
 }

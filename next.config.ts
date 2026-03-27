@@ -1,11 +1,12 @@
 import type { NextConfig } from "next";
-import path from "path";
 
 const nextConfig: NextConfig = {
   /* config options here */
-  distDir: path.join(process.cwd(), "src/.next"),
+  // Use a project-relative build output directory to avoid invalid concatenated paths
+  distDir: "src/.next",
   turbopack: {
-    root: path.join(process.cwd(), "src"),
+    // Point Turbopack at the app source directory using a relative path
+    root: "src",
   },
 };
 

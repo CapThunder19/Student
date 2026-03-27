@@ -2,6 +2,7 @@ import { randomUUID } from 'crypto';
 import { NextRequest, NextResponse } from 'next/server';
 import dbConnect from '@/lib/mongodb';
 import ComplaintModel, { ComplaintSeverity, ComplaintStatus } from '@/models/Complaint';
+import { getComplaintNextEscalationAt } from './escalation';
 
 const HISTORY_LIMIT = 200;
 const severityOrder: Record<ComplaintSeverity, number> = {
@@ -79,28 +80,6 @@ const normalizeAttachments = (value: unknown): ComplaintAttachment[] => {
       uploadedAt: new Date(item?.uploadedAt || new Date()).toISOString(),
     }))
     .filter((item) => item.name && item.mimeType && item.dataUrl && item.size >= 0);
-};
-
-export const complaintEscalationMinutes: Record<ComplaintSeverity, number> = {
-  red: 30,
-  yellow: 360,
-  green: 1440,
-};
-
-export const complaintNotificationMinutes: Record<ComplaintSeverity, number> = {
-  red: 10,
-  yellow: 120,
-  green: 0,
-};
-
-export const getComplaintNextEscalationAt = (complaint: Pick<StoredComplaint, 'severity' | 'status' | 'createdAt' | 'lastEscalatedAt'>) => {
-  if (complaint.status === 'resolved' || complaint.status === 'escalated') {
-    return null;
-  }
-
-  const cooldownMinutes = complaintEscalationMinutes[complaint.severity];
-  const referenceTime = complaint.lastEscalatedAt || complaint.createdAt;
-  return new Date(new Date(referenceTime).getTime() + cooldownMinutes * 60 * 1000);
 };
 
 const toResponseComplaint = (doc: StoredComplaint) => ({
