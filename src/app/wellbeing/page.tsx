@@ -127,7 +127,7 @@ export default function WellbeingPage() {
       setChatLoading(false);
     }
   };
-  
+
   const peerListeners = [
     { id: '1', name: 'Priya', rating: 4.8, sessions: 23, status: 'online' },
     { id: '2', name: 'Rahul', rating: 4.6, sessions: 18, status: 'online' },
@@ -238,9 +238,9 @@ export default function WellbeingPage() {
           <motion.section initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="mb-12">
             <h2 className="text-2xl font-bold mb-6">Ground · Breathing Loop</h2>
             <div className={`${CARD} p-8 text-center bg-[#FFF7E8]`}>
-              <motion.div 
-                animate={{ scale: breathing ? [1, 1.5, 1.5, 1] : 1 }} 
-                transition={{ duration: 10, times: [0, 0.4, 0.6, 1], ease: "easeInOut", repeat: breathing ? Infinity : 0 }} 
+              <motion.div
+                animate={{ scale: breathing ? [1, 1.5, 1.5, 1] : 1 }}
+                transition={{ duration: 10, times: [0, 0.4, 0.6, 1], ease: "easeInOut", repeat: breathing ? Infinity : 0 }}
                 className="w-48 h-48 bg-linear-to-br from-[#4F46E5] to-[#22C55E] rounded-full mx-auto mb-6 flex items-center justify-center font-bold text-white text-2xl shadow-lg shadow-[#4F46E5]/40"
               >
                 {breathingPhase}
@@ -505,9 +505,8 @@ export default function WellbeingPage() {
                       </div>
                     </div>
                     <span
-                      className={`px-2 py-1 rounded-full text-[11px] font-bold border-2 border-[#1A1A1A] ${
-                        listener.status === 'online' ? 'bg-[#BBF7D0] text-[#166534]' : 'bg-[#E5E7EB] text-[#4B5563]'
-                      }`}
+                      className={`px-2 py-1 rounded-full text-[11px] font-bold border-2 border-[#1A1A1A] ${listener.status === 'online' ? 'bg-[#BBF7D0] text-[#166534]' : 'bg-[#E5E7EB] text-[#4B5563]'
+                        }`}
                     >
                       {listener.status === 'online' ? '● Online' : '○ Offline'}
                     </span>
